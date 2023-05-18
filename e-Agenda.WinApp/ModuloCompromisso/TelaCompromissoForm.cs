@@ -19,9 +19,16 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         {
             InitializeComponent();
         }
-        public Compromisso Compromisso 
-        { 
+        public Compromisso Compromisso
+        {
+            set
+            {
+                //txtId.Text = value.id.ToString();
+                //txtAssunto.Text = value.assunto;
+
+            }
             get { return compromisso; }
         }
+
     }
 }
