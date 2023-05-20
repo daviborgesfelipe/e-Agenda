@@ -12,11 +12,14 @@ namespace e_Agenda.WinApp.ModuloCompromisso
     internal class ControladorCompromisso : ControladorBase
     {
         RepositorioCompromisso repositorioCompromisso;
+        RepositorioContato repositorioContato;
         ListagemCompromissoControl listagemCompromisso;
 
-        public ControladorCompromisso(RepositorioCompromisso repositorioCompromisso)
+
+        public ControladorCompromisso(RepositorioCompromisso repositorioCompromisso, RepositorioContato repositorioContato)
         {
             this.repositorioCompromisso = repositorioCompromisso;
+            this.repositorioContato = repositorioContato;
         }
 
         public override string ToolTipInserir { get { return "Inserir novo Compromisso"; } }
@@ -25,9 +28,33 @@ namespace e_Agenda.WinApp.ModuloCompromisso
 
         public override string ToolTipExcluir { get { return "Excluir Compromisso existente"; } }
 
+        public override string ToolTipFiltrar { get { return "Filtrar Compromissos existente"; } }
+
         public override void Editar()
         {
-            throw new NotImplementedException();
+            Compromisso compromisso = listagemCompromisso.ObterCompromissoSelecionado();
+
+            if (compromisso == null)
+            {
+                MessageBox.Show($"Selecione um compromisso primeiro!",
+                    "Edição de Compromissos",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
+                return;
+            }
+
+            TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);
+            telaCompromisso.Compromisso = compromisso;
+
+            DialogResult opcaoEscolhida = telaCompromisso.ShowDialog();
+
+            if (opcaoEscolhida == DialogResult.OK)
+            {
+                repositorioCompromisso.Editar(telaCompromisso.Compromisso);
+
+                CarregarCompromisso();
+            }
         }
 
         public override void Excluir()
@@ -52,7 +79,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
 
         public override void Inserir()
         {
-            TelaCompromissoForm telaCompromisso = new TelaCompromissoForm();
+            TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);
 
             DialogResult opcaoEscolhida = telaCompromisso.ShowDialog();
 
@@ -66,6 +93,40 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             }
         }
 
+        public override void Filtrar()
+        {
+            TelaFiltroCompromissosForm telaFiltro = new TelaFiltroCompromissosForm();
+
+            if (telaFiltro.ShowDialog() == DialogResult.OK)
+            {
+                StatusCompromissoEnum statusSelecionado = telaFiltro.StatusSelecionado;
+                DateTime dataInicial = telaFiltro.DataInicial.Date;
+                DateTime dataFinal = telaFiltro.DataFinal.Date;
+                CarregarCompromissoComFiltro(statusSelecionado, dataInicial, dataFinal);
+            }
+        }
+        private void CarregarCompromissoComFiltro(StatusCompromissoEnum statusSelecionado, DateTime dataInicial, DateTime dataFinal)
+        {
+            string tipoCompromisso;
+            List<Compromisso> compromissos;
+
+            switch (statusSelecionado)
+            {
+                case StatusCompromissoEnum.Futuros:
+                    compromissos = repositorioCompromisso.SelecionarCompromissosFuturos(dataInicial, dataFinal);
+                    tipoCompromisso = "Futuro";
+                    break;
+                case StatusCompromissoEnum.Passados:
+                    compromissos = repositorioCompromisso.SelecionarCompromissosPassados(DateTime.Now);
+                    tipoCompromisso = "Passado";
+                    break;
+                default:
+                    compromissos = repositorioCompromisso.SelecionarTodos();
+                    tipoCompromisso = "";
+                    break;
+            }
+            listagemCompromisso.AtualizarRegistros(compromissos);
+        }
         private void CarregarCompromisso()
         {
             List<Compromisso> compromissos = repositorioCompromisso.SelecionarTodos();
