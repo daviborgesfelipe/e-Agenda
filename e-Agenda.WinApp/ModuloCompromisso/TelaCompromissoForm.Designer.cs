@@ -28,27 +28,32 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             lblNumero = new Label();
-            textBox1 = new TextBox();
+            txtNumero = new TextBox();
             lblAssunto = new Label();
-            textBox2 = new TextBox();
+            txtAssunto = new TextBox();
             lblDataCompromisso = new Label();
             lblInicio = new Label();
             lblTermino = new Label();
-            radioBtnContato = new RadioButton();
             comboBoxContatos = new ComboBox();
-            dateTimePicker1 = new DateTimePicker();
+            repositorioContatoBindingSource = new BindingSource(components);
+            txtDataCompromisso = new DateTimePicker();
             pnlLocalizacao = new Panel();
             txtBoxPresencial = new TextBox();
             txtBoxRemoto = new TextBox();
             radioBtnPresencial = new RadioButton();
             radioBtnRemoto = new RadioButton();
-            maskedTextBox1 = new MaskedTextBox();
-            maskedTextBox2 = new MaskedTextBox();
+            txtInicio = new MaskedTextBox();
+            txtTermino = new MaskedTextBox();
             label1 = new Label();
             btnCancelar = new Button();
             btnGravar = new Button();
+            contatoBindingSource = new BindingSource(components);
+            checkBoxDesejaContato = new CheckBox();
+            ((System.ComponentModel.ISupportInitialize)repositorioContatoBindingSource).BeginInit();
             pnlLocalizacao.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)contatoBindingSource).BeginInit();
             SuspendLayout();
             // 
             // lblNumero
@@ -60,12 +65,12 @@
             lblNumero.TabIndex = 0;
             lblNumero.Text = "Numero: ";
             // 
-            // textBox1
+            // txtNumero
             // 
-            textBox1.Location = new Point(75, 6);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(205, 23);
-            textBox1.TabIndex = 1;
+            txtNumero.Location = new Point(75, 6);
+            txtNumero.Name = "txtNumero";
+            txtNumero.Size = new Size(205, 23);
+            txtNumero.TabIndex = 1;
             // 
             // lblAssunto
             // 
@@ -76,12 +81,12 @@
             lblAssunto.TabIndex = 2;
             lblAssunto.Text = "Assunto: ";
             // 
-            // textBox2
+            // txtAssunto
             // 
-            textBox2.Location = new Point(75, 40);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(342, 23);
-            textBox2.TabIndex = 3;
+            txtAssunto.Location = new Point(75, 40);
+            txtAssunto.Name = "txtAssunto";
+            txtAssunto.Size = new Size(342, 23);
+            txtAssunto.TabIndex = 3;
             // 
             // lblDataCompromisso
             // 
@@ -110,35 +115,29 @@
             lblTermino.TabIndex = 6;
             lblTermino.Text = "Termino";
             // 
-            // radioBtnContato
-            // 
-            radioBtnContato.AutoSize = true;
-            radioBtnContato.Location = new Point(75, 159);
-            radioBtnContato.Name = "radioBtnContato";
-            radioBtnContato.Size = new Size(276, 19);
-            radioBtnContato.TabIndex = 7;
-            radioBtnContato.TabStop = true;
-            radioBtnContato.Text = "Deseja marcar um contato neste compromisso?";
-            radioBtnContato.UseVisualStyleBackColor = true;
-            // 
             // comboBoxContatos
             // 
+            comboBoxContatos.DataSource = repositorioContatoBindingSource;
             comboBoxContatos.FormattingEnabled = true;
             comboBoxContatos.Location = new Point(75, 184);
             comboBoxContatos.Name = "comboBoxContatos";
             comboBoxContatos.Size = new Size(342, 23);
             comboBoxContatos.TabIndex = 8;
             // 
-            // dateTimePicker1
+            // repositorioContatoBindingSource
             // 
-            dateTimePicker1.AllowDrop = true;
-            dateTimePicker1.CustomFormat = " dd/MM/yyyy";
-            dateTimePicker1.Format = DateTimePickerFormat.Custom;
-            dateTimePicker1.ImeMode = ImeMode.NoControl;
-            dateTimePicker1.Location = new Point(127, 80);
-            dateTimePicker1.Name = "dateTimePicker1";
-            dateTimePicker1.Size = new Size(108, 23);
-            dateTimePicker1.TabIndex = 11;
+            repositorioContatoBindingSource.DataSource = typeof(ModuloContato.RepositorioContato);
+            // 
+            // txtDataCompromisso
+            // 
+            txtDataCompromisso.AllowDrop = true;
+            txtDataCompromisso.CustomFormat = " dd/MM/yyyy";
+            txtDataCompromisso.Format = DateTimePickerFormat.Custom;
+            txtDataCompromisso.ImeMode = ImeMode.NoControl;
+            txtDataCompromisso.Location = new Point(127, 80);
+            txtDataCompromisso.Name = "txtDataCompromisso";
+            txtDataCompromisso.Size = new Size(100, 23);
+            txtDataCompromisso.TabIndex = 11;
             // 
             // pnlLocalizacao
             // 
@@ -171,6 +170,7 @@
             // radioBtnPresencial
             // 
             radioBtnPresencial.AutoSize = true;
+            radioBtnPresencial.ForeColor = SystemColors.ActiveCaptionText;
             radioBtnPresencial.Location = new Point(23, 44);
             radioBtnPresencial.Name = "radioBtnPresencial";
             radioBtnPresencial.Size = new Size(84, 19);
@@ -182,6 +182,7 @@
             // radioBtnRemoto
             // 
             radioBtnRemoto.AutoSize = true;
+            radioBtnRemoto.ForeColor = SystemColors.ActiveCaptionText;
             radioBtnRemoto.Location = new Point(23, 12);
             radioBtnRemoto.Name = "radioBtnRemoto";
             radioBtnRemoto.Size = new Size(73, 19);
@@ -190,25 +191,25 @@
             radioBtnRemoto.Text = "Remoto: ";
             radioBtnRemoto.UseVisualStyleBackColor = true;
             // 
-            // maskedTextBox1
+            // txtInicio
             // 
-            maskedTextBox1.Location = new Point(127, 125);
-            maskedTextBox1.Mask = "90:00";
-            maskedTextBox1.Name = "maskedTextBox1";
-            maskedTextBox1.Size = new Size(108, 23);
-            maskedTextBox1.TabIndex = 15;
-            maskedTextBox1.TextAlign = HorizontalAlignment.Center;
-            maskedTextBox1.ValidatingType = typeof(DateTime);
+            txtInicio.Location = new Point(127, 125);
+            txtInicio.Mask = "90:00";
+            txtInicio.Name = "txtInicio";
+            txtInicio.Size = new Size(100, 23);
+            txtInicio.TabIndex = 15;
+            txtInicio.TextAlign = HorizontalAlignment.Center;
+            txtInicio.ValidatingType = typeof(DateTime);
             // 
-            // maskedTextBox2
+            // txtTermino
             // 
-            maskedTextBox2.Location = new Point(317, 125);
-            maskedTextBox2.Mask = "90:00";
-            maskedTextBox2.Name = "maskedTextBox2";
-            maskedTextBox2.Size = new Size(100, 23);
-            maskedTextBox2.TabIndex = 16;
-            maskedTextBox2.TextAlign = HorizontalAlignment.Center;
-            maskedTextBox2.ValidatingType = typeof(DateTime);
+            txtTermino.Location = new Point(317, 125);
+            txtTermino.Mask = "90:00";
+            txtTermino.Name = "txtTermino";
+            txtTermino.Size = new Size(100, 23);
+            txtTermino.TabIndex = 16;
+            txtTermino.TextAlign = HorizontalAlignment.Center;
+            txtTermino.ValidatingType = typeof(DateTime);
             // 
             // label1
             // 
@@ -221,6 +222,7 @@
             // 
             // btnCancelar
             // 
+            btnCancelar.DialogResult = DialogResult.Cancel;
             btnCancelar.Location = new Point(342, 341);
             btnCancelar.Name = "btnCancelar";
             btnCancelar.Size = new Size(75, 45);
@@ -230,39 +232,63 @@
             // 
             // btnGravar
             // 
+            btnGravar.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnGravar.DialogResult = DialogResult.OK;
             btnGravar.Location = new Point(261, 341);
             btnGravar.Name = "btnGravar";
             btnGravar.Size = new Size(75, 45);
             btnGravar.TabIndex = 18;
             btnGravar.Text = "Gravar";
             btnGravar.UseVisualStyleBackColor = true;
+            btnGravar.Click += btnGravar_Click;
+            // 
+            // contatoBindingSource
+            // 
+            contatoBindingSource.DataSource = typeof(ModuloContato.Contato);
+            // 
+            // checkBoxDesejaContato
+            // 
+            checkBoxDesejaContato.AutoSize = true;
+            checkBoxDesejaContato.Location = new Point(75, 159);
+            checkBoxDesejaContato.Name = "checkBoxDesejaContato";
+            checkBoxDesejaContato.Size = new Size(277, 19);
+            checkBoxDesejaContato.TabIndex = 19;
+            checkBoxDesejaContato.Text = "Deseja marcar um contato neste compromisso?";
+            checkBoxDesejaContato.UseVisualStyleBackColor = true;
             // 
             // TelaCompromissoForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(451, 398);
+            Controls.Add(checkBoxDesejaContato);
             Controls.Add(btnGravar);
             Controls.Add(btnCancelar);
             Controls.Add(label1);
-            Controls.Add(maskedTextBox2);
-            Controls.Add(maskedTextBox1);
+            Controls.Add(txtTermino);
+            Controls.Add(txtInicio);
             Controls.Add(pnlLocalizacao);
-            Controls.Add(dateTimePicker1);
+            Controls.Add(txtDataCompromisso);
             Controls.Add(comboBoxContatos);
-            Controls.Add(radioBtnContato);
             Controls.Add(lblTermino);
             Controls.Add(lblInicio);
             Controls.Add(lblDataCompromisso);
-            Controls.Add(textBox2);
+            Controls.Add(txtAssunto);
             Controls.Add(lblAssunto);
-            Controls.Add(textBox1);
+            Controls.Add(txtNumero);
             Controls.Add(lblNumero);
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            MinimumSize = new Size(467, 437);
             Name = "TelaCompromissoForm";
             ShowIcon = false;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "Cadastro Compromisso";
+            ((System.ComponentModel.ISupportInitialize)repositorioContatoBindingSource).EndInit();
             pnlLocalizacao.ResumeLayout(false);
             pnlLocalizacao.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)contatoBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -270,18 +296,17 @@
         #endregion
 
         private Label lblNumero;
-        private TextBox textBox1;
+        private TextBox txtNumero;
         private Label lblAssunto;
-        private TextBox textBox2;
+        private TextBox txtAssunto;
         private Label lblDataCompromisso;
         private Label lblInicio;
         private Label lblTermino;
-        private RadioButton radioBtnContato;
         private ComboBox comboBoxContatos;
-        private DateTimePicker dateTimePicker1;
+        private DateTimePicker txtDataCompromisso;
         private Panel pnlLocalizacao;
-        private MaskedTextBox maskedTextBox1;
-        private MaskedTextBox maskedTextBox2;
+        private MaskedTextBox txtInicio;
+        private MaskedTextBox txtTermino;
         private Label label1;
         private TextBox txtBoxPresencial;
         private TextBox txtBoxRemoto;
@@ -289,5 +314,8 @@
         private RadioButton radioBtnRemoto;
         private Button btnCancelar;
         private Button btnGravar;
+        private BindingSource repositorioContatoBindingSource;
+        private BindingSource contatoBindingSource;
+        private CheckBox checkBoxDesejaContato;
     }
 }
