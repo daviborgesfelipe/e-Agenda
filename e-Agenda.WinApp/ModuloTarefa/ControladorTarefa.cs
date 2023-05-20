@@ -10,6 +10,8 @@ namespace e_Agenda.WinApp.ModuloTarefa
 
         public override string ToolTipExcluir { get { return "Excluir Tarefa existente"; } }
 
+        public override string ToolTipFiltrar { get { return "Filtrar Tarefa existente"; } }
+
         public override void Editar()
         {
             throw new NotImplementedException();
@@ -18,6 +20,11 @@ namespace e_Agenda.WinApp.ModuloTarefa
         public override void Excluir()
         { 
         
+        }
+
+        public override void Filtrar()
+        {
+            throw new NotImplementedException();
         }
 
         public override void Inserir()
