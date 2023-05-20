@@ -43,6 +43,7 @@
             btnInserir = new ToolStripButton();
             btnEditar = new ToolStripButton();
             btnExcluir = new ToolStripButton();
+            btnFiltrar = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
             labelTipoCadastro = new ToolStripLabel();
             panelRegistros = new Panel();
@@ -70,21 +71,21 @@
             // contatosMenuItem
             // 
             contatosMenuItem.Name = "contatosMenuItem";
-            contatosMenuItem.Size = new Size(180, 22);
+            contatosMenuItem.Size = new Size(154, 22);
             contatosMenuItem.Text = "Contatos";
             contatosMenuItem.Click += contatosMenuItem_Click;
             // 
             // compromissosMenuItem
             // 
             compromissosMenuItem.Name = "compromissosMenuItem";
-            compromissosMenuItem.Size = new Size(180, 22);
+            compromissosMenuItem.Size = new Size(154, 22);
             compromissosMenuItem.Text = "Compromissos";
             compromissosMenuItem.Click += compromissosMenuItem_Click;
             // 
             // tarefasMenuItem
             // 
             tarefasMenuItem.Name = "tarefasMenuItem";
-            tarefasMenuItem.Size = new Size(180, 22);
+            tarefasMenuItem.Size = new Size(154, 22);
             tarefasMenuItem.Text = "Tarefas";
             tarefasMenuItem.Click += tarefasMenuItem_Click;
             // 
@@ -92,7 +93,7 @@
             // 
             despesasToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { despesasMenuItem, categoriasMenuItem });
             despesasToolStripMenuItem.Name = "despesasToolStripMenuItem";
-            despesasToolStripMenuItem.Size = new Size(180, 22);
+            despesasToolStripMenuItem.Size = new Size(154, 22);
             despesasToolStripMenuItem.Text = "Despesas";
             // 
             // despesasMenuItem
@@ -130,7 +131,7 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { btnInserir, btnEditar, btnExcluir, toolStripSeparator1, labelTipoCadastro });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { btnInserir, btnEditar, btnExcluir, btnFiltrar, toolStripSeparator1, labelTipoCadastro });
             toolStrip1.Location = new Point(0, 24);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(800, 45);
@@ -140,48 +141,64 @@
             // btnInserir
             // 
             btnInserir.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnInserir.Image = Properties.Resources.add_circle_FILL0_wght400_GRAD0_opsz24;
+            btnInserir.Enabled = false;
+            btnInserir.Image = Properties.Resources.adicionarIcon;
             btnInserir.ImageScaling = ToolStripItemImageScaling.None;
             btnInserir.ImageTransparentColor = Color.Magenta;
             btnInserir.Name = "btnInserir";
             btnInserir.Padding = new Padding(7);
-            btnInserir.Size = new Size(42, 42);
+            btnInserir.Size = new Size(42, 66);
             btnInserir.Text = "Inserir";
             btnInserir.Click += btnInserir_Click;
             // 
             // btnEditar
             // 
             btnEditar.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnEditar.Enabled = false;
             btnEditar.Image = Properties.Resources.edit_FILL0_wght400_GRAD0_opsz24;
             btnEditar.ImageScaling = ToolStripItemImageScaling.None;
             btnEditar.ImageTransparentColor = Color.Magenta;
             btnEditar.Name = "btnEditar";
             btnEditar.Padding = new Padding(7);
-            btnEditar.Size = new Size(42, 42);
+            btnEditar.Size = new Size(42, 66);
             btnEditar.Text = "Editar";
             btnEditar.Click += btnEditar_Click;
             // 
             // btnExcluir
             // 
             btnExcluir.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnExcluir.Enabled = false;
             btnExcluir.Image = Properties.Resources.delete_FILL0_wght400_GRAD0_opsz24;
             btnExcluir.ImageScaling = ToolStripItemImageScaling.None;
             btnExcluir.ImageTransparentColor = Color.Magenta;
             btnExcluir.Name = "btnExcluir";
             btnExcluir.Padding = new Padding(7);
-            btnExcluir.Size = new Size(42, 42);
+            btnExcluir.Size = new Size(42, 66);
             btnExcluir.Text = "Excluir";
             btnExcluir.Click += btnExcluir_Click;
+            // 
+            // btnFiltrar
+            // 
+            btnFiltrar.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnFiltrar.Enabled = false;
+            btnFiltrar.Image = Properties.Resources.tune_FILL0_wght400_GRAD0_opsz24;
+            btnFiltrar.ImageScaling = ToolStripItemImageScaling.None;
+            btnFiltrar.ImageTransparentColor = Color.Magenta;
+            btnFiltrar.Name = "btnFiltrar";
+            btnFiltrar.Padding = new Padding(7);
+            btnFiltrar.Size = new Size(42, 42);
+            btnFiltrar.Text = "Filtrar";
+            btnFiltrar.Click += btnFiltrar_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 45);
+            toolStripSeparator1.Size = new Size(6, 69);
             // 
             // labelTipoCadastro
             // 
             labelTipoCadastro.Name = "labelTipoCadastro";
-            labelTipoCadastro.Size = new Size(75, 42);
+            labelTipoCadastro.Size = new Size(75, 66);
             labelTipoCadastro.Text = "tipoCadastro";
             // 
             // panelRegistros
@@ -237,5 +254,6 @@
         private Panel panelRegistros;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripLabel labelTipoCadastro;
+        private ToolStripButton btnFiltrar;
     }
 }
