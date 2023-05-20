@@ -10,13 +10,14 @@ namespace e_Agenda.WinApp.ModuloCompromiso
 {
     public class Compromisso : EntidadeBase
     {
-        string assunto;
-        string local;
-        DateTime dataCompromisso;
-        DateTime dataInicio;
-        DateTime dataTermino;
+        public Contato contato;
+        public string assunto;
+        public string local;
+        public DateTime dataCompromisso;
+        public DateTime dataInicio;
+        public DateTime dataTermino;
 
-        Contato contato;
+        public List<Contato> contatoList;
 
         public Compromisso(string assunto, string local, DateTime dataCompromisso, DateTime dataInicio, DateTime dataTermino)
         {
@@ -25,10 +26,13 @@ namespace e_Agenda.WinApp.ModuloCompromiso
             this.dataCompromisso = dataCompromisso;
             this.dataInicio = dataInicio;
             this.dataTermino = dataTermino;
+
+            this.contatoList = new List<Contato>();
         }
+
         public override string ToString()
         {
-            return "Id: " + id + ", " + assunto + ", Contato: " + contato.nome;
+            return "Id: " + id + ", " + assunto + ", Contato: " + contato.nome + ", Local" + local + ", Data: " + dataCompromisso.ToShortDateString() + ", Inicio: " + dataInicio.ToShortTimeString() + ", Termino: " + dataTermino.ToShortTimeString();
         }
     }
 }
