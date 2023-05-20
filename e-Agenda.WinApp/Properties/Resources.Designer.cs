@@ -63,9 +63,9 @@ namespace e_Agenda.WinApp.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap add_circle_FILL0_wght400_GRAD0_opsz24 {
+        internal static System.Drawing.Bitmap adicionarIcon {
             get {
-                object obj = ResourceManager.GetObject("add_circle_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                object obj = ResourceManager.GetObject("adicionarIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -86,6 +86,16 @@ namespace e_Agenda.WinApp.Properties {
         internal static System.Drawing.Bitmap edit_FILL0_wght400_GRAD0_opsz24 {
             get {
                 object obj = ResourceManager.GetObject("edit_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap tune_FILL0_wght400_GRAD0_opsz24 {
+            get {
+                object obj = ResourceManager.GetObject("tune_FILL0_wght400_GRAD0_opsz24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
