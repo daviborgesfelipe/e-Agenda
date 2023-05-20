@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace e_Agenda.WinApp.ModuloCompromisso
 {
-    internal class RepositorioCompromisso
+    public class RepositorioCompromisso
     {
         List<Compromisso> compromissos = new List<Compromisso>();
         private static int contador;
@@ -27,7 +27,12 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         {
             Compromisso compromissoSelecionado = SelecionarPorId(compromisso.id);
 
-            //compromisso selecionado = compromisso
+            compromissoSelecionado.assunto = compromisso.assunto;
+            compromissoSelecionado.local = compromisso.local;
+            compromissoSelecionado.contato = compromisso.contato;
+            compromissoSelecionado.dataCompromisso = compromisso.dataCompromisso;
+            compromissoSelecionado.dataInicio = compromisso.dataInicio;
+            compromissoSelecionado.dataTermino = compromisso.dataTermino;
         }
         private Compromisso SelecionarPorId(int id)
         {
@@ -36,6 +41,17 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         public void Excluir(Compromisso compromisso)
         {
             compromissos.Remove(compromisso);
+        }
+
+        internal List<Compromisso> SelecionarCompromissosFuturos(DateTime dataInicial, DateTime dataFinal)
+        {
+            return compromissos.Where(c => c.dataCompromisso >= dataInicial && c.dataCompromisso <= dataFinal).ToList();
+
+        }
+
+        internal List<Compromisso> SelecionarCompromissosPassados(DateTime now)
+        {
+            return compromissos.Where(c => c.dataCompromisso < now).ToList();
         }
     }
 }
