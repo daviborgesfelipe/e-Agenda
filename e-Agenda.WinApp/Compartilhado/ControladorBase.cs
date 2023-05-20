@@ -7,12 +7,15 @@
         public abstract string ToolTipEditar { get; }
 
         public abstract string ToolTipExcluir { get; }
+        public abstract string ToolTipFiltrar { get; }
 
         public abstract void Inserir();
 
         public abstract void Editar();
 
         public abstract void Excluir();
+
+        public abstract void Filtrar();
 
         public abstract UserControl ObterListagem();
 
