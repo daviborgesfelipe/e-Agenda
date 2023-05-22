@@ -44,7 +44,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
                 return;
             }
 
-            TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);
+            TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);    
             telaCompromisso.Compromisso = compromisso;
 
             DialogResult opcaoEscolhida = telaCompromisso.ShowDialog();
@@ -72,9 +72,15 @@ namespace e_Agenda.WinApp.ModuloCompromisso
                 return;
             }
             DialogResult opcaoEscolhida = MessageBox.Show(
-                "Deseja excluir o compromisso {}?",
+                $"Deseja excluir o compromisso {compromisso.assunto}?",
                 "Exclusao de Compromissos"
                 );
+            if (opcaoEscolhida == DialogResult.OK)
+            {
+                repositorioCompromisso.Excluir(compromisso);
+
+                CarregarCompromisso();
+            }
         }
 
         public override void Inserir()
