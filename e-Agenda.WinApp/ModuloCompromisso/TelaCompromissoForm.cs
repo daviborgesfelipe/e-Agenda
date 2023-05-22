@@ -39,7 +39,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
                 txtAssunto.Text = value.assunto;
                 txtBoxPresencial.Text = value.local;
                 txtBoxRemoto.Text = value.local;
-                comboBoxContatos.DataSource = value.contato;
+                comboBoxContatos.DataSource = repositorioContato.SelecionarTodos();
                 txtDataCompromisso.Text = value.dataCompromisso.ToShortDateString();
                 txtInicio.Text = value.dataInicio.ToShortTimeString();
                 txtTermino.Text = value.dataTermino.ToShortTimeString();
