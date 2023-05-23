@@ -1,6 +1,7 @@
 using e_Agenda.WinApp.Compartilhado;
 using e_Agenda.WinApp.ModuloCompromiso;
 using e_Agenda.WinApp.ModuloCompromisso;
+using e_Agenda.WinApp.ModuloCompromisso.Enums;
 using e_Agenda.WinApp.ModuloContato;
 using e_Agenda.WinApp.ModuloTarefa;
 using System.Globalization;
@@ -32,9 +33,9 @@ namespace e_Agenda.WinApp
             repositorioContato.Inserir(contato2);
             repositorioContato.Inserir(contato3);
 
-            Compromisso compromisso1 = new Compromisso("Aula", "Online", Convert.ToDateTime("25/05/2023").Date, Convert.ToDateTime("11:00"), Convert.ToDateTime("12:00"));
-            Compromisso compromisso2 = new Compromisso("Estudar", "Presencial", Convert.ToDateTime("18/05/2023").Date, Convert.ToDateTime("08:00", CultureInfo.InvariantCulture), Convert.ToDateTime("22:00", CultureInfo.InvariantCulture));
-            Compromisso compromisso3 = new Compromisso("Trabalho", "Online", Convert.ToDateTime("13/06/2023").Date, Convert.ToDateTime("12:00", CultureInfo.InvariantCulture), Convert.ToDateTime("23:00", CultureInfo.InvariantCulture));
+            Compromisso compromisso1 = new Compromisso("Aula", "Online", Convert.ToDateTime("25/05/2023").Date, Convert.ToDateTime("11:00"), Convert.ToDateTime("12:00"), TipoCompromissoEnum.Remoto);
+            Compromisso compromisso2 = new Compromisso("Estudar", "Presencial", Convert.ToDateTime("18/05/2023").Date, Convert.ToDateTime("08:00", CultureInfo.InvariantCulture), Convert.ToDateTime("22:00", CultureInfo.InvariantCulture), TipoCompromissoEnum.Presencial);
+            Compromisso compromisso3 = new Compromisso("Trabalho", "Online", Convert.ToDateTime("13/06/2023").Date, Convert.ToDateTime("12:00", CultureInfo.InvariantCulture), Convert.ToDateTime("23:00", CultureInfo.InvariantCulture), TipoCompromissoEnum.Remoto);
             compromisso1.id = 14;
             compromisso1.contato = contato2;
             compromisso2.id = 24;
