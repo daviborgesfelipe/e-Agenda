@@ -52,7 +52,7 @@ namespace e_Agenda.WinApp
 
             ConfigurarTelaPrincipal(controlador);
 
-            HabilitarBotoesInserirEditarExcluir();
+            HabilitarBotoesInserirEditarExcluir(true);
 
         }
 
@@ -62,7 +62,7 @@ namespace e_Agenda.WinApp
 
             ConfigurarTelaPrincipal(controlador);
 
-            HabilitarBotoesInserirEditarExcluir();
+            HabilitarBotoesInserirEditarExcluir(false);
         }
 
         private void tarefasMenuItem_Click(object sender, EventArgs e)
@@ -71,16 +71,23 @@ namespace e_Agenda.WinApp
 
             ConfigurarTelaPrincipal(controlador);
 
-            HabilitarBotoesInserirEditarExcluir();
+            HabilitarBotoesInserirEditarExcluir(true);
 
         }
 
-        private void HabilitarBotoesInserirEditarExcluir()
+        private void HabilitarBotoesInserirEditarExcluir(bool temFiltro)
         {
             btnEditar.Enabled = true;
             btnExcluir.Enabled = true;
             btnInserir.Enabled = true;
-            btnFiltrar.Enabled = true;
+            if (temFiltro)
+            {
+                btnFiltrar.Enabled = true;
+            }
+            else
+            {
+                btnFiltrar.Enabled = false;
+            }
         }
 
         private void ConfigurarTelaPrincipal(ControladorBase controladorBase)
