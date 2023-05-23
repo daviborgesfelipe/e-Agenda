@@ -1,14 +1,5 @@
 ﻿using e_Agenda.WinApp.ModuloCompromiso;
 using e_Agenda.WinApp.ModuloContato;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace e_Agenda.WinApp.ModuloCompromisso
 {
@@ -18,7 +9,10 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         RepositorioContato repositorioContato;
         RepositorioCompromisso repositorioCompromisso;
 
-        public TelaCompromissoForm(RepositorioCompromisso _repositorioCompromisso, RepositorioContato _repositorioContato)
+        public TelaCompromissoForm(
+            RepositorioCompromisso _repositorioCompromisso,
+            RepositorioContato _repositorioContato
+            )
         {
             this.repositorioContato = _repositorioContato;
             this.repositorioCompromisso = _repositorioCompromisso;
