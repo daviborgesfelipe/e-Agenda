@@ -22,11 +22,6 @@ namespace e_Agenda.WinApp.ModuloTarefa
         
         }
 
-        public override void Filtrar()
-        {
-            throw new NotImplementedException();
-        }
-
         public override void Inserir()
         {
             TelaTarefaForm telaTarefa = new TelaTarefaForm();
