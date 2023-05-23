@@ -1,11 +1,6 @@
 ﻿using e_Agenda.WinApp.Compartilhado;
 using e_Agenda.WinApp.ModuloCompromiso;
 using e_Agenda.WinApp.ModuloContato;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace e_Agenda.WinApp.ModuloCompromisso
 {
@@ -15,7 +10,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         RepositorioContato repositorioContato;
         ListagemCompromissoControl listagemCompromisso;
 
-
         public ControladorCompromisso(RepositorioCompromisso repositorioCompromisso, RepositorioContato repositorioContato)
         {
             this.repositorioCompromisso = repositorioCompromisso;
@@ -23,11 +17,8 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         }
 
         public override string ToolTipInserir { get { return "Inserir novo Compromisso"; } }
-
         public override string ToolTipEditar { get { return "Editar Compromisso existente"; } }
-
         public override string ToolTipExcluir { get { return "Excluir Compromisso existente"; } }
-
         public override string ToolTipFiltrar { get { return "Filtrar Compromissos existente"; } }
 
         public override void Editar()
@@ -46,13 +37,10 @@ namespace e_Agenda.WinApp.ModuloCompromisso
 
             TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);    
             telaCompromisso.Compromisso = compromisso;
-
             DialogResult opcaoEscolhida = telaCompromisso.ShowDialog();
-
             if (opcaoEscolhida == DialogResult.OK)
             {
-                repositorioCompromisso.Editar(telaCompromisso.Compromisso);
-
+                repositorioCompromisso.Editar(compromisso.id, telaCompromisso.Compromisso);
                 CarregarCompromisso();
             }
         }
@@ -86,15 +74,12 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         public override void Inserir()
         {
             TelaCompromissoForm telaCompromisso = new TelaCompromissoForm(repositorioCompromisso, repositorioContato);
-
             DialogResult opcaoEscolhida = telaCompromisso.ShowDialog();
 
             if (opcaoEscolhida == DialogResult.OK)
             {
                 Compromisso compromisso = telaCompromisso.Compromisso;
-
                 repositorioCompromisso.Inserir(compromisso);
-
                 CarregarCompromisso();
             }
         }
@@ -139,7 +124,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
 
             listagemCompromisso.AtualizarRegistros(compromissos);
         }
-
         public override UserControl ObterListagem()
         {
             if (listagemCompromisso == null)
@@ -149,7 +133,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             CarregarCompromisso();
             return listagemCompromisso;
         }
-
         public override string ObterTipoCadastro()
         {
             return "Cadastro de Compromissos";
