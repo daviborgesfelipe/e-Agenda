@@ -8,6 +8,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso.Enums
 {
     public enum TipoCompromissoEnum
     {
-        Nenhum, Remoto, Local
+        Nenhum, Remoto, Presencial
     }
 }
