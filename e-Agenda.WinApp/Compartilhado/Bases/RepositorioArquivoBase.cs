@@ -1,21 +1,19 @@
 ﻿using e_Agenda.WinApp.Compartilhado.Interfaces;
-using e_Agenda.WinApp.ModuloContato;
-using e_Agenda.WinApp.ModuloTarefa.Entidades;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace e_Agenda.WinApp.Compartilhado
+namespace e_Agenda.WinApp.Compartilhado.Bases
 {
     public abstract class RepositorioArquivoBase<IEntidadeBase> : IRepositorioBase<IEntidadeBase>
         where IEntidadeBase : EntidadeBase<IEntidadeBase>
     {
         protected static int contador;
-        protected List<IEntidadeBase> listaRegistros;
+        protected List<IEntidadeBase> listaRegistros = new List<IEntidadeBase>();
 
+        public virtual IEntidadeBase SelecionarPorId(int id)
+        {
+            IEntidadeBase entidade = listaRegistros.FirstOrDefault(x => x.id == id);
+
+            return entidade;
+        }
         public virtual void Inserir(IEntidadeBase novaEntidade)
         {
             contador++;
@@ -48,12 +46,10 @@ namespace e_Agenda.WinApp.Compartilhado
             AdicionarEntidadeNoArquivo();
 
         }
-        public virtual IEntidadeBase SelecionarPorId(int id)
-        {
-            IEntidadeBase entidade = listaRegistros.FirstOrDefault(x => x.id == id);
-
-            return entidade;
-        }
+        
+        public abstract void AdicionarEntidadeNoArquivo();
+        public abstract void LerEntidadeNoArquivo();
+       
         public virtual List<IEntidadeBase> SelecionarTodos()
         {
             return listaRegistros;
@@ -62,7 +58,5 @@ namespace e_Agenda.WinApp.Compartilhado
         {
             return listaRegistros.Count > 0;
         }
-        public abstract void AdicionarEntidadeNoArquivo();
-        public abstract void LerEntidadeNoArquivo();
     }
 }

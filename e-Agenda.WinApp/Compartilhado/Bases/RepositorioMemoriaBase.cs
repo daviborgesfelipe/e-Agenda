@@ -1,6 +1,6 @@
 ﻿using e_Agenda.WinApp.Compartilhado.Interfaces;
 
-namespace e_Agenda.WinApp.Compartilhado
+namespace e_Agenda.WinApp.Compartilhado.Bases
 {
     public abstract class RepositorioMemoriaBase<IEntidadeBase> : IRepositorioBase<IEntidadeBase>
         where IEntidadeBase : EntidadeBase<IEntidadeBase>
