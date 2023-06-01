@@ -1,13 +1,13 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloCompromisso.Entidades;
 
 namespace e_Agenda.WinApp.ModuloCompromisso.Repositorios
 {
-    public class RepositorioCompromisso : RepositorioMemoriaBase<Compromisso>
+    public class RepositorioCompromissoMemoria : RepositorioMemoriaBase<Compromisso>
     {
         List<Compromisso> compromissos;
 
-        public RepositorioCompromisso(List<Compromisso> compromissos)
+        public RepositorioCompromissoMemoria(List<Compromisso> compromissos)
         {
             listaRegistros = compromissos;
             compromissos = listaRegistros;

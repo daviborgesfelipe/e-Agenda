@@ -1,4 +1,4 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloTarefa.Entidades;
 using e_Agenda.WinApp.ModuloTarefa.Interfaces;
 using System;

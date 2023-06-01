@@ -1,4 +1,4 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloContato.Entidades;
 
 namespace e_Agenda.WinApp.ModuloContato.Repositorios
