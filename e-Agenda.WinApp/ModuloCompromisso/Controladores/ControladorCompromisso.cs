@@ -1,10 +1,7 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloCompromisso.Entidades;
 using e_Agenda.WinApp.ModuloCompromisso.Interfaces;
-using e_Agenda.WinApp.ModuloCompromisso.Repositorios;
 using e_Agenda.WinApp.ModuloContato.Interfaces;
-using e_Agenda.WinApp.ModuloContato.Repositorios;
-using e_Agenda.WinApp.ModuloTarefa;
 
 namespace e_Agenda.WinApp.ModuloCompromisso.Controladores
 {
