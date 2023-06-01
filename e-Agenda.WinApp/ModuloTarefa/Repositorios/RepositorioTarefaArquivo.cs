@@ -1,4 +1,5 @@
-﻿using e_Agenda.WinApp.ModuloCompromisso.Entidades;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
+using e_Agenda.WinApp.ModuloCompromisso.Entidades;
 using e_Agenda.WinApp.ModuloTarefa.Entidades;
 using e_Agenda.WinApp.ModuloTarefa.Interfaces;
 using System.Text.Json;
@@ -10,14 +11,68 @@ namespace e_Agenda.WinApp.ModuloTarefa.Repositorios
     {
 
         private const string NOME_ARQUIVO_TAREFAS = "Tarefas.json";
-        private List<Tarefa> tarefas = new List<Tarefa>();
+        private List<Tarefa> tarefas;
 
         public RepositorioTarefaArquivo()
         {
-            this.listaRegistros = tarefas;
             if (File.Exists(NOME_ARQUIVO_TAREFAS))
                 LerEntidadeNoArquivo();
+            this.listaRegistros = tarefas;
         }
+        
+        public override void AdicionarEntidadeNoArquivo()
+        {
+            AdicionarTarefasDoArquivo();
+        }
+        public override void LerEntidadeNoArquivo()
+        {
+            LerTarefasEmArquivo();
+        }
+        
+        private void AdicionarTarefasDoArquivo()
+        {
+            JsonSerializerOptions opcoes = new JsonSerializerOptions();
+            opcoes.IncludeFields = true;
+            opcoes.WriteIndented = true;
+            string tarefasJson = JsonSerializer.Serialize(tarefas, opcoes);
+            File.WriteAllText(NOME_ARQUIVO_TAREFAS, tarefasJson);
+
+            AtualizarContador();
+        }
+        private void LerTarefasEmArquivo()
+        {
+            JsonSerializerOptions options = new JsonSerializerOptions();
+            options.IncludeFields = true;
+            string tarefasJson = File.ReadAllText(NOME_ARQUIVO_TAREFAS);
+            if (tarefasJson.Length > 0)
+            {
+                tarefas = JsonSerializer.Deserialize<List<Tarefa>>(tarefasJson, options);
+            }
+        }
+
+        private void AtualizarContador()
+        {
+            contador = tarefas.Max(x => x.id);
+        }
+        public List<Tarefa> SelecionarPendentes()
+        {
+            return tarefas
+                    .Where(x => x.percentualConcluido < 100)
+                    .ToList();
+        }
+        public List<Tarefa> SelecionarConcluidas()
+        {
+            return tarefas
+                    .Where(x => x.percentualConcluido == 100)
+                    .ToList();
+        }
+        public List<Tarefa> SelecionarTodosOrdenadosPorPrioridade()
+        {
+            return tarefas
+                    .OrderByDescending(x => x.prioridade)
+                    .ToList();
+        }
+        /*
         public override Tarefa SelecionarPorId(int id)
         {
             Tarefa entidade = tarefas.FirstOrDefault(x => x.id == id);
@@ -49,58 +104,6 @@ namespace e_Agenda.WinApp.ModuloTarefa.Repositorios
             AdicionarEntidadeNoArquivo();
 
         }
-        
-        public override void AdicionarEntidadeNoArquivo()
-        {
-            AdicionarTarefasDoArquivo();
-        }
-        public override void LerEntidadeNoArquivo()
-        {
-            LerTarefasEmArquivo();
-        }
-        
-        private void AtualizarContador()
-        {
-            contador = tarefas.Max(x => x.id);
-        }
-        private void AdicionarTarefasDoArquivo()
-        {
-            JsonSerializerOptions opcoes = new JsonSerializerOptions();
-            opcoes.IncludeFields = true;
-            opcoes.WriteIndented = true;
-            string tarefasJson = JsonSerializer.Serialize(tarefas, opcoes);
-            File.WriteAllText(NOME_ARQUIVO_TAREFAS, tarefasJson);
-
-            AtualizarContador();
-        }
-        private void LerTarefasEmArquivo()
-        {
-            JsonSerializerOptions options = new JsonSerializerOptions();
-            options.IncludeFields = true;
-            string tarefasJson = File.ReadAllText(NOME_ARQUIVO_TAREFAS);
-            if (tarefasJson.Length > 0)
-            {
-                tarefas = JsonSerializer.Deserialize<List<Tarefa>>(tarefasJson, options);
-            }
-        }
-
-        public List<Tarefa> SelecionarPendentes()
-        {
-            return tarefas
-                    .Where(x => x.percentualConcluido < 100)
-                    .ToList();
-        }
-        public List<Tarefa> SelecionarConcluidas()
-        {
-            return tarefas
-                    .Where(x => x.percentualConcluido == 100)
-                    .ToList();
-        }
-        public List<Tarefa> SelecionarTodosOrdenadosPorPrioridade()
-        {
-            return tarefas
-                    .OrderByDescending(x => x.prioridade)
-                    .ToList();
-        }
+         */
     }
 }
