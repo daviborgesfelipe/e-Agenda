@@ -1,3 +1,4 @@
+using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloCompromisso.Controladores;
 using e_Agenda.WinApp.ModuloCompromisso.Interfaces;
 using e_Agenda.WinApp.ModuloCompromisso.Repositorios;
