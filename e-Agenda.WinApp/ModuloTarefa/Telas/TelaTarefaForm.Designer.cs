@@ -66,6 +66,7 @@
             // 
             txtTitulo.Location = new Point(84, 42);
             txtTitulo.Name = "txtTitulo";
+            txtTitulo.PlaceholderText = "Ex: Projeto EAgenda";
             txtTitulo.Size = new Size(395, 23);
             txtTitulo.TabIndex = 9;
             // 
@@ -130,7 +131,7 @@
             cmbPrioridade.Size = new Size(121, 23);
             cmbPrioridade.TabIndex = 14;
             // 
-            // TelaCadastroTarefaForm
+            // TelaTarefaForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -145,7 +146,7 @@
             Controls.Add(label3);
             Controls.Add(btnCancelar);
             Controls.Add(btnGravar);
-            Name = "TelaCadastroTarefaForm";
+            Name = "TelaTarefaForm";
             ShowIcon = false;
             Text = "Cadastro de Tarefas";
             ResumeLayout(false);

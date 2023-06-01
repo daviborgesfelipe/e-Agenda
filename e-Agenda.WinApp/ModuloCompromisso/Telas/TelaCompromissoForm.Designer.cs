@@ -33,7 +33,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         {
             components = new System.ComponentModel.Container();
             lblNumero = new Label();
-            txtNumero = new TextBox();
             lblAssunto = new Label();
             txtAssunto = new TextBox();
             lblDataCompromisso = new Label();
@@ -54,6 +53,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             btnGravar = new Button();
             contatoBindingSource = new BindingSource(components);
             checkBoxDesejaContato = new CheckBox();
+            txtNumero = new MaskedTextBox();
             ((System.ComponentModel.ISupportInitialize)repositorioContatoBindingSource).BeginInit();
             pnlLocalizacao.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)contatoBindingSource).BeginInit();
@@ -68,13 +68,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             lblNumero.TabIndex = 0;
             lblNumero.Text = "Numero: ";
             // 
-            // txtNumero
-            // 
-            txtNumero.Location = new Point(75, 6);
-            txtNumero.Name = "txtNumero";
-            txtNumero.Size = new Size(205, 23);
-            txtNumero.TabIndex = 1;
-            // 
             // lblAssunto
             // 
             lblAssunto.AutoSize = true;
@@ -88,6 +81,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             // 
             txtAssunto.Location = new Point(75, 40);
             txtAssunto.Name = "txtAssunto";
+            txtAssunto.PlaceholderText = "Ex: Prova";
             txtAssunto.Size = new Size(342, 23);
             txtAssunto.TabIndex = 3;
             // 
@@ -160,6 +154,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             // 
             txtBoxPresencial.Location = new Point(115, 40);
             txtBoxPresencial.Name = "txtBoxPresencial";
+            txtBoxPresencial.PlaceholderText = "Ex: Empresa - Universidade";
             txtBoxPresencial.Size = new Size(179, 23);
             txtBoxPresencial.TabIndex = 3;
             // 
@@ -167,6 +162,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             // 
             txtBoxRemoto.Location = new Point(115, 11);
             txtBoxRemoto.Name = "txtBoxRemoto";
+            txtBoxRemoto.PlaceholderText = "Ex: Meet - Discord";
             txtBoxRemoto.Size = new Size(179, 23);
             txtBoxRemoto.TabIndex = 2;
             // 
@@ -259,11 +255,22 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             checkBoxDesejaContato.Text = "Deseja marcar um contato neste compromisso?";
             checkBoxDesejaContato.UseVisualStyleBackColor = true;
             // 
+            // txtNumero
+            // 
+            txtNumero.Location = new Point(75, 6);
+            txtNumero.Mask = "00000";
+            txtNumero.Name = "txtNumero";
+            txtNumero.Size = new Size(59, 23);
+            txtNumero.TabIndex = 20;
+            txtNumero.TextAlign = HorizontalAlignment.Center;
+            txtNumero.ValidatingType = typeof(int);
+            // 
             // TelaCompromissoForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(451, 398);
+            Controls.Add(txtNumero);
             Controls.Add(checkBoxDesejaContato);
             Controls.Add(btnGravar);
             Controls.Add(btnCancelar);
@@ -278,7 +285,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             Controls.Add(lblDataCompromisso);
             Controls.Add(txtAssunto);
             Controls.Add(lblAssunto);
-            Controls.Add(txtNumero);
             Controls.Add(lblNumero);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -299,7 +305,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         #endregion
 
         private Label lblNumero;
-        private TextBox txtNumero;
         private Label lblAssunto;
         private TextBox txtAssunto;
         private Label lblDataCompromisso;
@@ -320,5 +325,6 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         private BindingSource repositorioContatoBindingSource;
         private BindingSource contatoBindingSource;
         private CheckBox checkBoxDesejaContato;
+        private MaskedTextBox txtNumero;
     }
 }
