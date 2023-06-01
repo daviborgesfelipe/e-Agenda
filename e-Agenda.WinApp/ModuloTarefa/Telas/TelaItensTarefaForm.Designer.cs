@@ -101,6 +101,7 @@
             // 
             txtDescricao.Location = new Point(90, 77);
             txtDescricao.Name = "txtDescricao";
+            txtDescricao.PlaceholderText = "Ex: Iniciar Diagrama de Classes (Uma fraçao da Tarefa)";
             txtDescricao.Size = new Size(313, 23);
             txtDescricao.TabIndex = 28;
             // 

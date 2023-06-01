@@ -98,6 +98,7 @@
             // 
             txtNome.Location = new Point(90, 50);
             txtNome.Name = "txtNome";
+            txtNome.PlaceholderText = "Ex: Robo Tupiniquim";
             txtNome.Size = new Size(395, 23);
             txtNome.TabIndex = 5;
             // 
@@ -105,6 +106,7 @@
             // 
             txtTelefone.Location = new Point(90, 79);
             txtTelefone.Name = "txtTelefone";
+            txtTelefone.PlaceholderText = "Ex: 47 9 9999 9999";
             txtTelefone.Size = new Size(149, 23);
             txtTelefone.TabIndex = 6;
             // 
@@ -112,6 +114,7 @@
             // 
             txtCargo.Location = new Point(90, 108);
             txtCargo.Name = "txtCargo";
+            txtCargo.PlaceholderText = "Ex: Inteligencia Artificial";
             txtCargo.Size = new Size(149, 23);
             txtCargo.TabIndex = 7;
             // 
@@ -119,6 +122,7 @@
             // 
             txtEmail.Location = new Point(336, 79);
             txtEmail.Name = "txtEmail";
+            txtEmail.PlaceholderText = "Ex: robo@tupiniquim.com";
             txtEmail.Size = new Size(149, 23);
             txtEmail.TabIndex = 8;
             // 
@@ -126,6 +130,7 @@
             // 
             txtEmpresa.Location = new Point(336, 108);
             txtEmpresa.Name = "txtEmpresa";
+            txtEmpresa.PlaceholderText = "Ex: Academia do Programador";
             txtEmpresa.Size = new Size(149, 23);
             txtEmpresa.TabIndex = 9;
             // 
