@@ -1,4 +1,4 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.Compartilhado.Enums;
 
 namespace e_Agenda.WinApp.ModuloTarefa.Entidades
@@ -35,6 +35,7 @@ namespace e_Agenda.WinApp.ModuloTarefa.Entidades
         {
             return new string[] { };
         }
+
         public void AdicionarItem(ItemTarefa item)
         {
             items.Add(item);
@@ -43,6 +44,12 @@ namespace e_Agenda.WinApp.ModuloTarefa.Entidades
         {
             ItemTarefa itemSelecionado = items.FirstOrDefault(x => x.Equals(item));
             itemSelecionado.Concluir();
+            CalcularPercentualConcluido();
+        }
+        public void DesmarcarItem(ItemTarefa item)
+        {
+            ItemTarefa itemSelecionado = items.FirstOrDefault(x => x.Equals(item));
+            itemSelecionado.Desmarcar();
             CalcularPercentualConcluido();
         }
         private void CalcularPercentualConcluido()
@@ -55,12 +62,6 @@ namespace e_Agenda.WinApp.ModuloTarefa.Entidades
             decimal qtdConcluidos = items.Count(x => x.concluido == true);
             decimal resultado = qtdConcluidos / qtdItens * 100;
             percentualConcluido = Math.Round(resultado, 2);
-        }
-        public void DesmarcarItem(ItemTarefa item)
-        {
-            ItemTarefa itemSelecionado = items.FirstOrDefault(x => x.Equals(item));
-            itemSelecionado.Desmarcar();
-            CalcularPercentualConcluido();
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 
 namespace e_Agenda.WinApp.ModuloContato.Entidades
 {
@@ -28,12 +28,10 @@ namespace e_Agenda.WinApp.ModuloContato.Entidades
             cargo = registroAtualizado.cargo;
             empresa = registroAtualizado.empresa;
         }
-
         public override string ToString()
         {
             return "Id: " + id + " - Nome: " + nome + " - Empresa: " + empresa + " - E-mail: " + email;
         }
-
         public override string[] Validar()
         {
             List<string> erros = new List<string>();

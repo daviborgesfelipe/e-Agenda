@@ -1,4 +1,4 @@
-﻿using e_Agenda.WinApp.Compartilhado;
+﻿using e_Agenda.WinApp.Compartilhado.Bases;
 using e_Agenda.WinApp.ModuloCompromisso.Enums;
 using e_Agenda.WinApp.ModuloContato.Entidades;
 
@@ -55,12 +55,10 @@ namespace e_Agenda.WinApp.ModuloCompromisso.Entidades
                 localPresencial = registroAtualizado.localPresencial;
             }
         }
-
         public override string ToString()
         {
             return "Id: " + id + "  - Assunto: " + assunto + "  - Contato: " + contato.nome + "  - Tipo Local: " + tipoLocal.ToString() + "  - Data Compromisso: " + dataCompromisso.ToShortDateString() + "  - Horario Inicio: " + dataInicio.ToShortTimeString() + "  - Horario Termino: " + dataTermino.ToShortTimeString();
         }
-
         public override string[] Validar()
         {
             List<string> erros = new List<string>();
