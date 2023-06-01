@@ -1,122 +1,60 @@
-using e_Agenda.WinApp.Compartilhado;
-using e_Agenda.WinApp.ModuloCompromiso;
-using e_Agenda.WinApp.ModuloCompromisso;
-using e_Agenda.WinApp.ModuloCompromisso.Enums;
-using e_Agenda.WinApp.ModuloContato;
-using e_Agenda.WinApp.ModuloTarefa;
-using System.Globalization;
+using e_Agenda.WinApp.ModuloCompromisso.Controladores;
+using e_Agenda.WinApp.ModuloCompromisso.Interfaces;
+using e_Agenda.WinApp.ModuloCompromisso.Repositorios;
+
+using e_Agenda.WinApp.ModuloContato.Controladores;
+using e_Agenda.WinApp.ModuloContato.Interfaces;
+using e_Agenda.WinApp.ModuloContato.Repositorios;
+
+using e_Agenda.WinApp.ModuloTarefa.Controladores;
+using e_Agenda.WinApp.ModuloTarefa.Interfaces;
+using e_Agenda.WinApp.ModuloTarefa.Repositorios;
 
 namespace e_Agenda.WinApp
 {
     public partial class TelaPrincipalForm : Form
     {
-        private ControladorBase controlador;
-        private RepositorioContato repositorioContato = new RepositorioContato(new List<Contato>());
-        private RepositorioCompromisso repositorioCompromisso = new RepositorioCompromisso(new List<Compromisso>());
+        private static TelaPrincipalForm telaPrincipal;
 
+        private ControladorBase controlador;
+
+        private IRepositorioContato repositorioContato = new RepositorioContatoArquivo();
+        private IRepositorioCompromisso repositorioCompromisso = new RepositorioCompromissoArquivo();
+        private IRepositorioTarefa repositorioTarefa = new RepositorioTarefaArquivo();
         public TelaPrincipalForm()
         {
             InitializeComponent();
-
-            IniciaAlgumasInstanciasNoRepositorio();
         }
-
-        private void IniciaAlgumasInstanciasNoRepositorio()
+        public static TelaPrincipalForm Instancia
         {
-            Contato contato1 = new Contato("Davi", "3241-3078", "davi@gmail.com", "Desenvolvedor", "NDD");
-            Contato contato2 = new Contato("Thiagao", "3345-7833", "thiagao@gmail.com", "Professor Desenvolvedor", "Academia do Programador");
-            Contato contato3 = new Contato("Caio", "3111-9844", "caio@gmail.com", "Desenvolvedor", "NDD");
-            contato1.id = 30;
-            contato2.id = 31;
-            contato3.id = 32;
-            repositorioContato.Inserir(contato1);
-            repositorioContato.Inserir(contato2);
-            repositorioContato.Inserir(contato3);
-
-            Compromisso compromisso1 = new Compromisso("Aula", "Online", Convert.ToDateTime("25/05/2023").Date, Convert.ToDateTime("11:00"), Convert.ToDateTime("12:00"), TipoCompromissoEnum.Remoto);
-            Compromisso compromisso2 = new Compromisso("Estudar", "Presencial", Convert.ToDateTime("18/05/2023").Date, Convert.ToDateTime("08:00", CultureInfo.InvariantCulture), Convert.ToDateTime("22:00", CultureInfo.InvariantCulture), TipoCompromissoEnum.Presencial);
-            Compromisso compromisso3 = new Compromisso("Trabalho", "Online", Convert.ToDateTime("13/06/2023").Date, Convert.ToDateTime("12:00", CultureInfo.InvariantCulture), Convert.ToDateTime("23:00", CultureInfo.InvariantCulture), TipoCompromissoEnum.Remoto);
-            compromisso1.id = 14;
-            compromisso1.contato = contato2;
-            compromisso2.id = 24;
-            compromisso2.contato = contato1;
-            compromisso3.id = 34;
-            compromisso3.contato = contato3;
-            repositorioCompromisso.Inserir(compromisso1);
-            repositorioCompromisso.Inserir(compromisso2);
-            repositorioCompromisso.Inserir(compromisso3);
+            get
+            {
+                if (telaPrincipal == null)
+                    telaPrincipal = new TelaPrincipalForm();
+                return telaPrincipal;
+            }
         }
-
         private void compromissosMenuItem_Click(object sender, EventArgs e)
         {
             controlador = new ControladorCompromisso(repositorioCompromisso, repositorioContato);
-
             ConfigurarTelaPrincipal(controlador);
-
-            HabilitarBotoesInserirEditarExcluir(true);
+            HabilitarBotoesInserirEditarExcluir(true, false);
 
         }
 
         private void contatosMenuItem_Click(object sender, EventArgs e)
         {
             controlador = new ControladorContato(repositorioContato);
-
             ConfigurarTelaPrincipal(controlador);
-
-            HabilitarBotoesInserirEditarExcluir(false);
+            HabilitarBotoesInserirEditarExcluir(false, false);
         }
 
         private void tarefasMenuItem_Click(object sender, EventArgs e)
         {
-            controlador = new ControladorTarefa();
-
+            controlador = new ControladorTarefa(repositorioTarefa);
             ConfigurarTelaPrincipal(controlador);
+            HabilitarBotoesInserirEditarExcluir(true, true);
 
-            HabilitarBotoesInserirEditarExcluir(true);
-
-        }
-
-        private void HabilitarBotoesInserirEditarExcluir(bool temFiltro)
-        {
-            btnEditar.Enabled = true;
-            btnExcluir.Enabled = true;
-            btnInserir.Enabled = true;
-            if (temFiltro)
-            {
-                btnFiltrar.Enabled = true;
-            }
-            else
-            {
-                btnFiltrar.Enabled = false;
-            }
-        }
-
-        private void ConfigurarTelaPrincipal(ControladorBase controladorBase)
-        {
-            labelTipoCadastro.Text = controladorBase.ObterTipoCadastro();
-
-            ConfigurarToolTips(controlador);
-
-            ConfigurarListagem(controlador);
-        }
-
-        private void ConfigurarListagem(ControladorBase controladorBase)
-        {
-            UserControl listagem = controladorBase.ObterListagem();
-
-            listagem.Dock = DockStyle.Fill;
-
-            panelRegistros.Controls.Clear();
-
-            panelRegistros.Controls.Add(listagem);
-        }
-
-        private void ConfigurarToolTips(ControladorBase controlador)
-        {
-            btnInserir.ToolTipText = controlador.ToolTipInserir;
-            btnEditar.ToolTipText = controlador.ToolTipEditar;
-            btnExcluir.ToolTipText = controlador.ToolTipExcluir;
-            btnFiltrar.ToolTipText = controlador.ToolTipFiltrar;
         }
 
         private void btnInserir_Click(object sender, EventArgs e)
@@ -138,5 +76,68 @@ namespace e_Agenda.WinApp
         {
             controlador.Filtrar();
         }
+        private void btnAddItems_Click(object sender, EventArgs e)
+        {
+            controlador.Adicionar();
+        }
+
+        private void btnConcluirItemTarefa_Click(object sender, EventArgs e)
+        {
+            controlador.ConcluirItens();
+        }
+
+        public void AtualizarRodape(string mensagem)
+        {
+            labelValidacaoRodape.Text = mensagem;
+        }
+        private void ConfigurarTelaPrincipal(ControladorBase controladorBase)
+        {
+            labelTipoCadastro.Text = controladorBase.ObterTipoCadastro();
+            ConfigurarToolTips(controlador);
+            ConfigurarListagem(controlador);
+        }
+        private void ConfigurarToolTips(ControladorBase controlador)
+        {
+            btnInserir.ToolTipText = controlador.ToolTipInserir;
+            btnEditar.ToolTipText = controlador.ToolTipEditar;
+            btnExcluir.ToolTipText = controlador.ToolTipExcluir;
+            btnFiltrar.ToolTipText = controlador.ToolTipFiltrar;
+            btnAddItems.ToolTipText = controlador.ToolTipAddItems;
+            btnConcluirItemTarefa.ToolTipText = controlador.ToolTipConcluirItemTarefa;
+        }
+        private void ConfigurarListagem(ControladorBase controladorBase)
+        {
+            UserControl listagem = controladorBase.ObterListagem();
+            listagem.Dock = DockStyle.Fill;
+            panelRegistros.Controls.Clear();
+            panelRegistros.Controls.Add(listagem);
+        }
+        private void HabilitarBotoesInserirEditarExcluir(bool temFiltro, bool temItem)
+        {
+            btnEditar.Enabled = true;
+            btnExcluir.Enabled = true;
+            btnInserir.Enabled = true;
+
+            if (temFiltro)
+            {
+                btnFiltrar.Enabled = true;
+            }
+            else
+            {
+                btnFiltrar.Enabled = false;
+            }
+
+            if (temItem)
+            {
+                btnAddItems.Enabled = true;
+                btnConcluirItemTarefa.Enabled = true;
+            }
+            else
+            {
+                btnAddItems.Enabled = false;
+                btnConcluirItemTarefa.Enabled = false;
+            }
+        }
+
     }
 }
