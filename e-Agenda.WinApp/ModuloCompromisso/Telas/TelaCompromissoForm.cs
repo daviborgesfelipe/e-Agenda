@@ -1,10 +1,8 @@
 ﻿using e_Agenda.WinApp.ModuloCompromisso.Entidades;
 using e_Agenda.WinApp.ModuloCompromisso.Enums;
 using e_Agenda.WinApp.ModuloCompromisso.Interfaces;
-using e_Agenda.WinApp.ModuloCompromisso.Repositorios;
 using e_Agenda.WinApp.ModuloContato.Entidades;
 using e_Agenda.WinApp.ModuloContato.Interfaces;
-using e_Agenda.WinApp.ModuloContato.Repositorios;
 
 namespace e_Agenda.WinApp.ModuloCompromisso
 {
@@ -62,7 +60,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             Contato contato = (Contato)comboBoxContatos.SelectedValue;
             TipoCompromissoEnum tipoLocal = LocalSelecionado;
             // se p tipoEnum.Remoto estiver selecionado o tipoLocal recebe remoto e txtBoxRemoto recebe o valor
-            
+
             if (tipoLocal == TipoCompromissoEnum.Presencial)
             {
                 local = txtBoxPresencial.Text;
@@ -71,7 +69,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
             {
                 local = txtBoxRemoto.Text;
             }
-            
+
             compromisso = new Compromisso(assunto, local, dataCompromisso, dataInicio, dataTermino, tipoLocal);
             if (contato != null)
             {
@@ -85,7 +83,7 @@ namespace e_Agenda.WinApp.ModuloCompromisso
         }
         public string TextoLocalSelecionado
         {
-            get 
+            get
             {
                 if (radioBtnPresencial.Checked)
                 {
