@@ -1,4 +1,5 @@
 ﻿using e_Agenda.Dominio.Compartilhado;
+using e_Agenda.Dominio.ModuloCompromisso;
 
 namespace e_Agenda.Dominio.ModuloContato
 {
