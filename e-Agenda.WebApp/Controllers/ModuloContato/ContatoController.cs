@@ -19,6 +19,25 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
             this.servicoContato = servicoContato;
         }
 
+        [HttpPost]
+        public IActionResult Post(
+        [FromBody] FormsContatoViewModel novoImovel
+        )
+        {
+            Contato novoContato = new Contato
+            {
+                Nome = novoImovel.Nome,
+                Email = novoImovel.Email,
+                Telefone = novoImovel.Telefone,
+                Empresa = novoImovel.Empresa,
+                Cargo = novoImovel.Cargo
+            };
+
+            servicoContato.Inserir(novoContato);
+
+            return Created("registration", novoImovel);
+        }
+
         [HttpGet]
         public List<ListarContatoViewModel> SeleciontarTodos(StatusFavoritoEnum statusFavorito)
         {
@@ -75,5 +94,6 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
 
             return contatoViewModel;
         }
+
     }
 }
