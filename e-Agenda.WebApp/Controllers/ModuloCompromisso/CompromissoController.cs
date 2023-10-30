@@ -2,27 +2,20 @@
 using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
 using Microsoft.AspNetCore.Mvc;
-using e_Agenda.Aplicacao.ModuloCompromisso;
-using e_Agenda.Aplicacao.ModuloContato;
-using e_Agenda.Dominio.ModuloContato;
-using e_Agenda.WebApp.ViewModels.ModuloContato;
 
 namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
 {
-    [Route("api/[controller]")]
+    [Route("api/compromissos")]
     [ApiController]
     public class CompromissoController : ControllerBase
     {
         ServicoCompromisso servicoCompromisso;
-        ServicoContato servicoContato;
 
         public CompromissoController(
-            ServicoCompromisso servicoCompromisso,
-            ServicoContato servicoContato
+            ServicoCompromisso servicoCompromisso
         )
         {
             this.servicoCompromisso = servicoCompromisso;
-            this.servicoContato = servicoContato;
         }
 
         [HttpPost]
@@ -57,6 +50,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
                 resultado.IsFailed
             });
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -94,6 +88,68 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
                 return BadRequest(new
                 {
                     Mensagem = "Erro ao selecionar a lista de contatos",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(
+            Guid id, [FromBody]
+            FormsCompromissoViewModel compromissoAtualizado
+        )
+        {
+            var compromisso = servicoCompromisso.SelecionarPorId(id).Value;
+
+            compromisso.Id = id;
+            compromisso.Assunto = compromissoAtualizado.Assunto;
+            compromisso.Local = compromissoAtualizado.Local;
+            compromisso.TipoLocal = (Dominio.ModuloCompromisso.TipoLocalizacaoCompromissoEnum)compromissoAtualizado.TipoLocal;
+            compromisso.Link = compromissoAtualizado.Link;
+            compromisso.Data = compromissoAtualizado.Data;
+            compromisso.HoraInicio = TimeSpan.Parse(compromissoAtualizado.HoraInicio);
+            compromisso.HoraTermino = TimeSpan.Parse(compromissoAtualizado.HoraTermino);
+            compromisso.ContatoId = compromissoAtualizado.ContatoId;
+
+
+            var resultado = servicoCompromisso.Editar(compromisso);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao editar o compromisso",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteById(Guid id)
+        {
+            var resultado = servicoCompromisso.Excluir(id);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao excluir o compromisso por Id",
                     Erros = erros,
                     resultado.IsFailed
                 });
