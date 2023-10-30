@@ -19,10 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\ModuloCompromisso\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\e-Agenda.Aplicacao\e-Agenda.Aplicacao.csproj" />
     <ProjectReference Include="..\e-Agenda.Dominio\e-Agenda.Dominio.csproj" />
     <ProjectReference Include="..\e-Agenda.Infra.Orm\e-Agenda.Infra.Orm.csproj" />

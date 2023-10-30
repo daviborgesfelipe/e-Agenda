@@ -1,9 +1,14 @@
+using e_Agenda.Aplicacao.ModuloCompromisso;
 using e_Agenda.Aplicacao.ModuloContato;
 using e_Agenda.Dominio.Compartilhado;
+using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.Infra.Orm.Compartilhado;
+using e_Agenda.Infra.Orm.ModuloCompromisso;
 using e_Agenda.Infra.Orm.ModuloContato;
+using e_Agenda.WebApp.Controllers.ModuloCompromisso;
 using e_Agenda.WebApp.Controllers.ModuloContato;
+
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -70,6 +75,11 @@ namespace e_Agenda.WebApp
             services.AddTransient<ServicoContato>();
             services.AddTransient<IValidadorContato, ValidadorContato>();
             services.AddTransient<IRepositorioContato, RepositorioContatoOrm>();
+
+            services.AddTransient<CompromissoController>();
+            services.AddTransient<ServicoCompromisso>();
+            services.AddTransient<IValidadorCompromisso, ValidadorCompromisso>();
+            services.AddTransient<IRepositorioCompromisso, RepositorioCompromissoOrm>();
         }
     }
 }

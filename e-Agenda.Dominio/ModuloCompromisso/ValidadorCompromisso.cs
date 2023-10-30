@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace e_Agenda.Dominio.ModuloCompromisso
 {
-    public class ValidadorCompromisso : AbstractValidator<Compromisso>
+    public class ValidadorCompromisso : AbstractValidator<Compromisso>, IValidadorCompromisso
     {
         public ValidadorCompromisso()
         {
