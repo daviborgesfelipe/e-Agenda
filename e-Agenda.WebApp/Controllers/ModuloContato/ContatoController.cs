@@ -2,9 +2,7 @@
 using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
 using e_Agenda.WebApp.ViewModels.ModuloContato;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace e_Agenda.WebApp.Controllers.ModuloContato
 {
@@ -21,28 +19,78 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
 
         [HttpPost]
         public IActionResult Post(
-        [FromBody] FormsContatoViewModel novoImovel
+            [FromBody] FormsContatoViewModel novoContato
         )
         {
-            Contato novoContato = new Contato
+            var contato = new Contato
             {
-                Nome = novoImovel.Nome,
-                Email = novoImovel.Email,
-                Telefone = novoImovel.Telefone,
-                Empresa = novoImovel.Empresa,
-                Cargo = novoImovel.Cargo
+                Nome = novoContato.Nome,
+                Email = novoContato.Email,
+                Telefone = novoContato.Telefone,
+                Empresa = novoContato.Empresa,
+                Cargo = novoContato.Cargo
             };
 
-            servicoContato.Inserir(novoContato);
+            var resultado = servicoContato.Inserir(contato);
 
-            return Created("registration", novoImovel);
+            if (resultado.IsSuccess)
+            {
+                return Created("registration", novoContato);
+            }
+
+            string[] erros = resultado.Errors.Select(e => e.Message).ToArray();
+            
+            return BadRequest(new
+            {
+                Mensagem = "Erro ao inserir o contato",
+                Erros = erros,
+                resultado.IsFailed
+            }); 
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(
+            Guid id, [FromBody] 
+            FormsContatoViewModel contatoAtualizado
+        )
+        {
+            var contato =  servicoContato.SelecionarPorId(id).Value;
+
+            contato.Id = id;
+            contato.Nome = contatoAtualizado.Nome;
+            contato.Email = contatoAtualizado.Email;
+            contato.Telefone = contatoAtualizado.Telefone;
+            contato.Empresa = contatoAtualizado.Empresa;
+            contato.Cargo = contatoAtualizado.Cargo;
+            
+
+            var resultado = servicoContato.Editar(contato);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao editar o contato",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
         }
 
         [HttpGet]
-        public List<ListarContatoViewModel> SeleciontarTodos(StatusFavoritoEnum statusFavorito)
+        public IActionResult GetAll(
+            StatusFavoritoEnum statusFavorito
+        )
         {
             var contatos = servicoContato.SelecionarTodos(statusFavorito).Value;
-
+            
             var contatosViewModel = new List<ListarContatoViewModel>();
 
             foreach (var contato in contatos)
@@ -60,13 +108,32 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
                 contatosViewModel.Add(contatoViewModel);
             }
 
-            return contatosViewModel;
+            var resultado = servicoContato.SelecionarTodos(statusFavorito);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return Ok(contatosViewModel);
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao selecionar a lista de contatos",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
         }
 
         [HttpGet("visualizacao-completa/{id}")]
-        public VisualizarContatoViewModel SeleciontarPorId(string id)
+        public IActionResult GetCompleteById(
+            Guid id
+        )
         {
-            var contato = servicoContato.SelecionarPorId(Guid.Parse(id)).Value;
+            var contato = servicoContato.SelecionarPorId(id).Value;
 
             var contatoViewModel = new VisualizarContatoViewModel
             {
@@ -92,8 +159,47 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
                 contatoViewModel.Compromissos.Add(compromissoViewModel);
             }
 
-            return contatoViewModel;
+            var resultado = servicoContato.SelecionarPorId(id);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return Ok(contatoViewModel);
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao selecionar o contato por Id",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
         }
 
+        [HttpDelete("{id}")]
+        public IActionResult DeleteById( Guid id ) 
+        {
+            var resultado = servicoContato.Excluir(id);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return NoContent(); 
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao excluir o contato por Id",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
+        }
     }
 }

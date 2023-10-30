@@ -53,6 +53,13 @@ namespace e_Agenda.Aplicacao.ModuloContato
         {
             Log.Logger.Debug("Tentando editar contato... {@c}", contato);
 
+            Contato contatoExistente = repositorioContato.SelecionarPorId(contato.Id);
+
+            if (contatoExistente == null)
+            {
+                return Result.Fail($"Contato com ID {contato.Id} não encontrado.");
+            }
+
             var resultado = Validar(contato);
 
             if (resultado.IsFailed)
