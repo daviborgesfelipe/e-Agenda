@@ -9,7 +9,7 @@ namespace e_Agenda.Infra.Orm.Compartilhado
         {
             var builder = new DbContextOptionsBuilder<eAgendaDbContext>();
 
-            builder.UseSqlServer(@"Data Source=(LOCALDB)\MSSQLLOCALDB;Initial Catalog=eAgendaOrm;Integrated Security=True");
+            builder.UseSqlServer(@"Data Source=(LOCALDB)\MSSQLLOCALDB;Initial Catalog=eAgenda;Integrated Security=True");
 
             return new eAgendaDbContext(builder.Options);
         }
