@@ -15,5 +15,10 @@ namespace e_Agenda.WebApp.ViewModels.ModuloTarefa
         public string Situacao { get; set;}
 
         public List<VisualizarItemTarefaViewModel> Itens { get; set; }
+
+        public VisualizarTarefaViewModel()
+        {
+            Itens = new List<VisualizarItemTarefaViewModel>();
+        }
     }
 }

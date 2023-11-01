@@ -52,7 +52,7 @@ namespace e_Agenda.Dominio.ModuloTarefa
 
         public void ConcluirItem(Guid itemId)
         {
-            ItemTarefa itemTarefa = itens.Find(x => x.Id.Equals(itemId));
+            ItemTarefa itemTarefa = itens.Find(item => item.Id.Equals(itemId));
 
             itemTarefa?.Concluir();
 
@@ -88,7 +88,7 @@ namespace e_Agenda.Dominio.ModuloTarefa
                 return;
             }
 
-            int qtdConcluidas = itens.Count(x => x.Concluido);
+            int qtdConcluidas = itens.Count(item => item.Concluido);
 
             var percentualConcluido = (qtdConcluidas / (decimal)itens.Count()) * 100;
 

@@ -1,5 +1,7 @@
-﻿using e_Agenda.Aplicacao.ModuloTarefa;
+﻿using e_Agenda.Aplicacao.ModuloContato;
+using e_Agenda.Aplicacao.ModuloTarefa;
 using e_Agenda.Dominio.ModuloTarefa;
+using e_Agenda.WebApp.ViewModels.ModuloContato;
 using e_Agenda.WebApp.ViewModels.ModuloTarefa;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Extensions;
@@ -41,8 +43,6 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
 
                 contato.AdicionarItem(item);
             }
-
-
 
             var resultado = servicoTarefa.Inserir(contato);
 
@@ -106,7 +106,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         [HttpGet("visualizacao-completa/{id}")]
         public IActionResult GetCompleteById(
         Guid id
-)
+        )
         {
             var tarefa = servicoTarefa.SelecionarPorId(id).Value;
 
@@ -114,22 +114,25 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
             {
                 Id = tarefa.Id,
                 Titulo = tarefa.Titulo,
-                DataCriacao = tarefa.DataCriacao.ToString(),
+                DataCriacao = tarefa.DataCriacao.ToString(@"dd-MM-yyyy"),
                 DataConclusao = tarefa.DataConclusao.ToString(),
                 QntdItens = tarefa.Itens.Count,
                 PercentualConcluido = (double)tarefa.PercentualConcluido,
                 Prioridade = tarefa.Prioridade.GetDisplayName(),
-            };
+                Situacao = tarefa.PercentualConcluido == 100 ? "Concluído" : "Pendente"
 
+            };
             foreach (var item in tarefa.Itens)
             {
-                var compromissoViewModel = new VisualizarItemTarefaViewModel
+                var itemTarefaViewlModel = new VisualizarItemTarefaViewModel
                 {
                     Titulo = item.Titulo,
-                    Situacao = StatusTarefaEnum.Concluidas.GetDisplayName(),
+                    Situacao = item.Concluido ? "Concluído" : "Pendente",
                 };
-
+                tarefaViewModel.Itens.Add(itemTarefaViewlModel);
             }
+
+            tarefa.CalcularPercentualConcluido();
 
             var resultado = servicoTarefa.SelecionarPorId(id);
 
@@ -145,6 +148,42 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
                 return BadRequest(new
                 {
                     Mensagem = "Erro ao selecionar o contato por Id",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(
+        Guid id, [FromBody]
+            FormsTarefaViewModel tarefaAtualizada
+        )
+        {
+            var tarefa = servicoTarefa.SelecionarPorId(id).Value;
+
+            tarefa.Id = id;
+            tarefa.Titulo = tarefaAtualizada.Titulo;
+            tarefa.Prioridade = tarefaAtualizada.Prioridade;
+            foreach (var item in tarefa.Itens)
+            {
+                tarefa.ConcluirItem(item.Id);
+            }
+
+            var resultado = servicoTarefa.Editar(tarefa);
+
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao editar o contato",
                     Erros = erros,
                     resultado.IsFailed
                 });
