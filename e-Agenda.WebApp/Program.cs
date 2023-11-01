@@ -1,14 +1,17 @@
 using e_Agenda.Aplicacao.ModuloCompromisso;
 using e_Agenda.Aplicacao.ModuloContato;
+using e_Agenda.Aplicacao.ModuloTarefa;
 using e_Agenda.Dominio.Compartilhado;
 using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.Dominio.ModuloContato;
+using e_Agenda.Dominio.ModuloTarefa;
 using e_Agenda.Infra.Orm.Compartilhado;
 using e_Agenda.Infra.Orm.ModuloCompromisso;
 using e_Agenda.Infra.Orm.ModuloContato;
+using e_Agenda.Infra.Orm.ModuloTarefa;
 using e_Agenda.WebApp.Controllers.ModuloCompromisso;
 using e_Agenda.WebApp.Controllers.ModuloContato;
-
+using e_Agenda.WebApp.Controllers.ModuloTarefa;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -71,15 +74,17 @@ namespace e_Agenda.WebApp
                 optionsBuilder.UseSqlServer(connectionString);
             });
 
-            services.AddTransient<ContatoController>();
             services.AddTransient<ServicoContato>();
             services.AddTransient<IValidadorContato, ValidadorContato>();
             services.AddTransient<IRepositorioContato, RepositorioContatoOrm>();
 
-            services.AddTransient<CompromissoController>();
             services.AddTransient<ServicoCompromisso>();
             services.AddTransient<IValidadorCompromisso, ValidadorCompromisso>();
             services.AddTransient<IRepositorioCompromisso, RepositorioCompromissoOrm>();
+
+            services.AddTransient<ServicoTarefa>();
+            services.AddTransient<IValidadorTarefa, ValidadorTarefa>();
+            services.AddTransient<IRepositorioTarefa, RepositorioTarefaOrm>();
         }
     }
 }
