@@ -1,20 +1,5 @@
-using e_Agenda.Aplicacao.ModuloCompromisso;
-using e_Agenda.Aplicacao.ModuloContato;
-using e_Agenda.Aplicacao.ModuloTarefa;
-using e_Agenda.Dominio.Compartilhado;
-using e_Agenda.Dominio.ModuloCompromisso;
-using e_Agenda.Dominio.ModuloContato;
-using e_Agenda.Dominio.ModuloTarefa;
-using e_Agenda.Infra.Orm.Compartilhado;
-using e_Agenda.Infra.Orm.ModuloCompromisso;
-using e_Agenda.Infra.Orm.ModuloContato;
-using e_Agenda.Infra.Orm.ModuloTarefa;
-using e_Agenda.WebApp.Controllers.ModuloCompromisso;
-using e_Agenda.WebApp.Controllers.ModuloContato;
-using e_Agenda.WebApp.Controllers.ModuloTarefa;
+using e_Agenda.WebApp.Config;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 using System.Globalization;
 
 namespace e_Agenda.WebApp
@@ -27,20 +12,11 @@ namespace e_Agenda.WebApp
 
             ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
 
-
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
-                .WriteTo.Seq("http://localhost:5341")
-                .CreateLogger();
-
-            ConfigureServices(builder.Services);
-
-            // Add services to the container.
+            LoggerConfigExtension.ConfigurarLogger();
+            builder.Services.ConfigurarInjecaoDependencia(builder.Configuration);
+            builder.Services.ConfigurarSwagger();
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
 
@@ -55,36 +31,9 @@ namespace e_Agenda.WebApp
 
             app.UseAuthorization();
 
-
             app.MapControllers();
 
             app.Run();
-        }
-        private static void ConfigureServices(IServiceCollection services)
-        {
-            var configuracao = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var connectionString = configuracao.GetConnectionString("SqlServer");
-
-            services.AddDbContext<IContextoPersistencia, eAgendaDbContext>(optionsBuilder =>
-            {
-                optionsBuilder.UseSqlServer(connectionString);
-            });
-
-            services.AddTransient<ServicoContato>();
-            services.AddTransient<IValidadorContato, ValidadorContato>();
-            services.AddTransient<IRepositorioContato, RepositorioContatoOrm>();
-
-            services.AddTransient<ServicoCompromisso>();
-            services.AddTransient<IValidadorCompromisso, ValidadorCompromisso>();
-            services.AddTransient<IRepositorioCompromisso, RepositorioCompromissoOrm>();
-
-            services.AddTransient<ServicoTarefa>();
-            services.AddTransient<IValidadorTarefa, ValidadorTarefa>();
-            services.AddTransient<IRepositorioTarefa, RepositorioTarefaOrm>();
         }
     }
 }
