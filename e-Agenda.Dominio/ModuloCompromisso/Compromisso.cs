@@ -9,6 +9,42 @@ namespace e_Agenda.Dominio.ModuloCompromisso
         private TipoLocalizacaoCompromissoEnum _compromissoEnum;
         private Contato _contato;
 
+        public string Assunto { get; set; }
+        public string Local { get; set; }
+        public string Link { get; set; }
+        public TipoLocalizacaoCompromissoEnum TipoLocal
+        {
+            get { return _compromissoEnum; }
+            set
+            {
+                _compromissoEnum = value;
+
+                switch (_compromissoEnum)
+                {
+                    case TipoLocalizacaoCompromissoEnum.Presencial: Link = null; break;
+                    case TipoLocalizacaoCompromissoEnum.Remoto: Local = null; break;
+
+                    default:
+                        break;
+                }
+            }
+        }
+        public DateTime Data { get { return _date.Date; } set { _date = value; } }
+        public TimeSpan HoraInicio { get; set; }
+        public TimeSpan HoraTermino { get; set; }
+        public Guid? ContatoId { get; set; }
+        public Contato Contato
+        {
+            get { return _contato; }
+            set
+            {
+                _contato = value;
+
+                if (_contato != null)
+                    ContatoId = _contato.Id;
+            }
+        }
+
         public Compromisso()
         {
             Data = DateTime.Now;
@@ -28,46 +64,6 @@ namespace e_Agenda.Dominio.ModuloCompromisso
             Contato = contato;
         }
 
-        public string Assunto { get; set; }
-
-        public string Local { get; set; }
-
-        public TipoLocalizacaoCompromissoEnum TipoLocal
-        {
-            get { return _compromissoEnum; }
-            set
-            {
-                _compromissoEnum = value;
-
-                switch (_compromissoEnum)
-                {
-                    case TipoLocalizacaoCompromissoEnum.Presencial: Link = null; break;
-                    case TipoLocalizacaoCompromissoEnum.Remoto: Local = null; break;
-
-                    default:
-                        break;
-                }
-            }
-        }
-
-        public string Link { get; set; }
-
-        public DateTime Data { get { return _date.Date; } set { _date = value; } }
-        public TimeSpan HoraInicio { get; set; }
-        public TimeSpan HoraTermino { get; set; }
-        public Contato Contato
-        {
-            get { return _contato; }
-            set
-            {
-                _contato = value;
-
-                if (_contato != null)
-                    ContatoId = _contato.Id;
-            }
-        }
-
-        public Guid? ContatoId { get; set; }
         public override void Atualizar(Compromisso registro)
         {
             Id = registro.Id;
