@@ -1,4 +1,5 @@
 using e_Agenda.WebApp.Config;
+using e_Agenda.WebApp.Config.AutomapperConfig;
 using FluentValidation;
 using System.Globalization;
 
@@ -11,8 +12,9 @@ namespace e_Agenda.WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
-
             LoggerConfigExtension.ConfigurarLogger();
+
+            builder.Services.ConfigurarAutoMapper();
             builder.Services.ConfigurarInjecaoDependencia(builder.Configuration);
             builder.Services.ConfigurarSwagger();
 

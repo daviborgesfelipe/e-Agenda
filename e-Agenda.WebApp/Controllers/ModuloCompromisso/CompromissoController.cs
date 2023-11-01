@@ -1,4 +1,5 @@
-﻿using e_Agenda.Aplicacao.ModuloCompromisso;
+﻿using AutoMapper;
+using e_Agenda.Aplicacao.ModuloCompromisso;
 using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
 using Microsoft.AspNetCore.Mvc;
@@ -10,35 +11,29 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
     public class CompromissoController : ControllerBase
     {
         ServicoCompromisso servicoCompromisso;
+        private IMapper mapeador;
 
         public CompromissoController(
-            ServicoCompromisso servicoCompromisso
+            ServicoCompromisso servicoCompromisso,
+            IMapper mapeador
         )
         {
             this.servicoCompromisso = servicoCompromisso;
+            this.mapeador = mapeador;
         }
 
         [HttpPost]
         public IActionResult Post(
-            [FromBody] FormsCompromissoViewModel novoCompromisso
+            [FromBody] FormsCompromissoViewModel compromissoViewModel
         )
         {
-            var compromisso = new Compromisso
-            {
-                Assunto = novoCompromisso.Assunto,
-                Local = novoCompromisso.Local,
-                TipoLocal = (Dominio.ModuloCompromisso.TipoLocalizacaoCompromissoEnum)novoCompromisso.TipoLocal,
-                Link = novoCompromisso.Link,
-                HoraInicio = TimeSpan.Parse(novoCompromisso.HoraInicio),
-                HoraTermino = TimeSpan.Parse(novoCompromisso.HoraTermino),
-                ContatoId = novoCompromisso.ContatoId
-            };
+            var compromisso = mapeador.Map<Compromisso>(compromissoViewModel);
 
             var resultado = servicoCompromisso.Inserir(compromisso);
 
             if (resultado.IsSuccess)
             {
-                return Created("registration", novoCompromisso);
+                return Created("registration", compromissoViewModel);
             }
 
             string[] erros = resultado.Errors.Select(e => e.Message).ToArray();
@@ -56,23 +51,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         {
             var compromissos = servicoCompromisso.SelecionarTodos().Value;
 
-            var compromissosViewModel = new List<ListarCompromissoViewModel>();
-
-
-            foreach (var compromisso in compromissos)
-            {
-                var compromissoViewModel = new ListarCompromissoViewModel
-                {
-                    Id = compromisso.Id,
-                    Assunto = compromisso.Assunto,
-                    Data = compromisso.Data,
-                    HoraInicio = compromisso.HoraInicio.ToString(),
-                    HoraTermino = compromisso.HoraTermino.ToString(),
-                    NomeContato = compromisso.Contato.Nome
-                };
-
-                compromissosViewModel.Add(compromissoViewModel);
-            }
+            var compromissosViewModel = mapeador.Map<ListarCompromissoViewModel>(compromissos);
 
             var resultado = servicoCompromisso.SelecionarTodos();
 
@@ -94,26 +73,46 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
             }
         }
 
-        [HttpPut("{id}")]
-        public IActionResult Put(
-            Guid id, [FromBody]
-            FormsCompromissoViewModel compromissoAtualizado
+        [HttpGet("visualizacao-completa/{id}")]
+        public IActionResult GetCompleteById(
+            Guid id
         )
         {
             var compromisso = servicoCompromisso.SelecionarPorId(id).Value;
 
-            compromisso.Id = id;
-            compromisso.Assunto = compromissoAtualizado.Assunto;
-            compromisso.Local = compromissoAtualizado.Local;
-            compromisso.TipoLocal = (Dominio.ModuloCompromisso.TipoLocalizacaoCompromissoEnum)compromissoAtualizado.TipoLocal;
-            compromisso.Link = compromissoAtualizado.Link;
-            compromisso.Data = compromissoAtualizado.Data;
-            compromisso.HoraInicio = TimeSpan.Parse(compromissoAtualizado.HoraInicio);
-            compromisso.HoraTermino = TimeSpan.Parse(compromissoAtualizado.HoraTermino);
-            compromisso.ContatoId = compromissoAtualizado.ContatoId;
+            var compromissoViewModel = mapeador.Map<ListarCompromissoViewModel>(compromisso);
 
+            var resultado = servicoCompromisso.SelecionarPorId(id);
 
-            var resultado = servicoCompromisso.Editar(compromisso);
+            string[] erros = resultado
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultado.IsSuccess)
+            {
+                return Ok(compromissoViewModel);
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao selecionar o compromisso por Id",
+                    Erros = erros,
+                    resultado.IsFailed
+                });
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(
+            Guid id, [FromBody]
+            FormsCompromissoViewModel compromissoViewModel
+        )
+        {
+            var compromissoDb = servicoCompromisso.SelecionarPorId(id).Value;
+
+            var compromisso = mapeador.Map(compromissoViewModel, compromissoDb);
+
+            var resultado = servicoCompromisso.Editar(compromissoDb);
 
             string[] erros = resultado
                 .Errors.Select(e => e.Message).ToArray();

@@ -1,10 +1,8 @@
-﻿using e_Agenda.Aplicacao.ModuloContato;
+﻿using AutoMapper;
 using e_Agenda.Aplicacao.ModuloTarefa;
 using e_Agenda.Dominio.ModuloTarefa;
-using e_Agenda.WebApp.ViewModels.ModuloContato;
 using e_Agenda.WebApp.ViewModels.ModuloTarefa;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Extensions;
 
 namespace e_Agenda.WebApp.Controllers.ModuloTarefa
 {
@@ -12,43 +10,26 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
     [ApiController]
     public class TarefaController : ControllerBase
     {
-        ServicoTarefa servicoTarefa;
-
-        public TarefaController(ServicoTarefa servicoTarefa)
+        private ServicoTarefa servicoTarefa;
+        private IMapper mapeador;
+        public TarefaController(ServicoTarefa servicoTarefa, IMapper mapeador)
         {
             this.servicoTarefa = servicoTarefa;
+            this.mapeador = mapeador;
         }
 
         [HttpPost]
         public IActionResult Post(
-            FormsTarefaViewModel tarefa
+            FormsTarefaViewModel tarefaViewModel
         )
         {
-            var contato = new Tarefa
-            {
-                Titulo = tarefa.Titulo,
-                Prioridade = tarefa.Prioridade,
-                DataCriacao = DateTime.Now,
-                PercentualConcluido = 0
-            };
-    
-            foreach (var _item in tarefa.Itens)
-            {
-                var item = new ItemTarefa
-                {
-                    Titulo = _item.Titulo,
-                    Status = _item.Status,
-                    Concluido = _item.Concluido,
-                };
+            var tarefa = mapeador.Map<Tarefa>(tarefaViewModel);
 
-                contato.AdicionarItem(item);
-            }
-
-            var resultado = servicoTarefa.Inserir(contato);
+            var resultado = servicoTarefa.Inserir(tarefa);
 
             if (resultado.IsSuccess)
             {
-                return Created("registration", tarefa);
+                return Created("registration", tarefaViewModel);
             }
 
             string[] erros = resultado.Errors.Select(e => e.Message).ToArray();
@@ -64,24 +45,9 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         [HttpGet]
         public IActionResult GetAll(StatusTarefaEnum statusTarefa)
         {
-            var listaTarefas = servicoTarefa.SelecionarTodos(statusTarefa).Value;
+            var tarefas = servicoTarefa.SelecionarTodos(statusTarefa).Value;
 
-            var compromissosViewModel = new List<ListarTarefaViewModel>();
-
-
-            foreach (var tarefa in listaTarefas)
-            {
-                var compromissoViewModel = new ListarTarefaViewModel
-                {
-                    Id = tarefa.Id,
-                    Titulo = tarefa.Titulo,
-                    DataCriacao = tarefa.DataCriacao,
-                    Prioridade = tarefa.Prioridade.ToString(),
-                    Situacao = StatusTarefaEnum.Todos.GetDisplayName(),
-                };
-
-                compromissosViewModel.Add(compromissoViewModel);
-            }
+            var tarefaViewModel = mapeador.Map<List<ListarTarefaViewModel>>(tarefas);
 
             var resultado = servicoTarefa.SelecionarTodos(StatusTarefaEnum.Todos);
 
@@ -90,7 +56,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
 
             if (resultado.IsSuccess)
             {
-                return Ok(compromissosViewModel);
+                return Ok(tarefaViewModel);
             }
             else
             {
@@ -110,27 +76,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         {
             var tarefa = servicoTarefa.SelecionarPorId(id).Value;
 
-            var tarefaViewModel = new VisualizarTarefaViewModel
-            {
-                Id = tarefa.Id,
-                Titulo = tarefa.Titulo,
-                DataCriacao = tarefa.DataCriacao.ToString(@"dd-MM-yyyy"),
-                DataConclusao = tarefa.DataConclusao.ToString(),
-                QntdItens = tarefa.Itens.Count,
-                PercentualConcluido = (double)tarefa.PercentualConcluido,
-                Prioridade = tarefa.Prioridade.GetDisplayName(),
-                Situacao = tarefa.PercentualConcluido == 100 ? "Concluído" : "Pendente"
-
-            };
-            foreach (var item in tarefa.Itens)
-            {
-                var itemTarefaViewlModel = new VisualizarItemTarefaViewModel
-                {
-                    Titulo = item.Titulo,
-                    Situacao = item.Concluido ? "Concluído" : "Pendente",
-                };
-                tarefaViewModel.Itens.Add(itemTarefaViewlModel);
-            }
+            var tarefaViewModel = mapeador.Map<ListarTarefaViewModel>(tarefa);
 
             tarefa.CalcularPercentualConcluido();
 
@@ -157,20 +103,14 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         [HttpPut("{id}")]
         public IActionResult Put(
         Guid id, [FromBody]
-            FormsTarefaViewModel tarefaAtualizada
+            FormsTarefaViewModel tarefaVIewModel
         )
         {
-            var tarefa = servicoTarefa.SelecionarPorId(id).Value;
+            var tarefaDb = servicoTarefa.SelecionarPorId(id).Value;
 
-            tarefa.Id = id;
-            tarefa.Titulo = tarefaAtualizada.Titulo;
-            tarefa.Prioridade = tarefaAtualizada.Prioridade;
-            foreach (var item in tarefa.Itens)
-            {
-                tarefa.ConcluirItem(item.Id);
-            }
+            var tarefa = mapeador.Map(tarefaVIewModel, tarefaDb);
 
-            var resultado = servicoTarefa.Editar(tarefa);
+            var resultado = servicoTarefa.Editar(tarefaDb);
 
             string[] erros = resultado
                 .Errors.Select(e => e.Message).ToArray();
