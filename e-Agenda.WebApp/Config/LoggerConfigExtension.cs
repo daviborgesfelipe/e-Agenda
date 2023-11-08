@@ -4,12 +4,19 @@ namespace e_Agenda.WebApp.Config
 {
     public static class LoggerConfigExtension
     {
-        public static void ConfigurarLogger()
+        public static void ConfigurarLogger(this IServiceCollection services, ILoggingBuilder logging)
         {
             Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Seq("http://localhost:5341")
-            .CreateLogger();
+              .MinimumLevel.Information()
+              .Enrich.FromLogContext()
+              .WriteTo.Console()
+              .CreateLogger();
+
+            Log.Logger.Information("Iniciando aplicação...");
+
+            logging.ClearProviders();
+
+            services.AddSerilog(Log.Logger);
         }
     }
 }

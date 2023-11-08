@@ -12,7 +12,8 @@ namespace e_Agenda.WebApp
             var builder = WebApplication.CreateBuilder(args);
 
             ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
-            LoggerConfigExtension.ConfigurarLogger();
+
+            builder.Services.ConfigurarLogger(builder.Logging);
 
             builder.Services.ConfigurarAutoMapper();
             builder.Services.ConfigurarInjecaoDependencia(builder.Configuration);
@@ -21,6 +22,8 @@ namespace e_Agenda.WebApp
             builder.Services.AddControllers();
 
             var app = builder.Build();
+
+            app.UseMiddleware<ManipuladorExcecoes>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using e_Agenda.Aplicacao.ModuloContato;
 using e_Agenda.Dominio.ModuloContato;
-using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
 using e_Agenda.WebApp.ViewModels.ModuloContato;
+using FluentResults;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 
 namespace e_Agenda.WebApp.Controllers.ModuloContato
 {
@@ -15,167 +14,130 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
     {
         private ServicoContato servicoContato;
         private IMapper mapeador;
+        private readonly ILogger<ContatoController> logger;
 
-        public ContatoController(ServicoContato servicoContato, IMapper mapeador)
+        public ContatoController(ServicoContato servicoContato, IMapper mapeador, ILogger<ContatoController> logger)
         {
             this.servicoContato = servicoContato;
             this.mapeador = mapeador;
+            this.logger = logger;
         }
 
         [HttpPost]
+        [ProducesResponseType(typeof(FormsContatoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public IActionResult Post(
             FormsContatoViewModel contatoViewModel
         )
         {
-            try
-            {
-                var contato = mapeador.Map<Contato>(contatoViewModel);
 
-                var resultado = servicoContato.Inserir(contato);
+            var contato = mapeador.Map<Contato>(contatoViewModel);
 
-                if (resultado.IsFailed)
-                {
-                    return BadRequest(new
-                    {
-                        Mensagem = "Erro ao inserir o contato",
-                        Erros = resultado.Errors.Select(x => x.Message),
-                        resultado.IsFailed
-                    });
-                }
+            return ProcessarResultado(servicoContato.Inserir(contato), contatoViewModel);
 
-                var enderecoContato = Request.GetDisplayUrl() + "/visualizacao-completa/" + resultado.Value.Id;
-
-                return Created(enderecoContato, contatoViewModel);
-            }
-            catch (Exception exc)
-            {
-                return StatusCode(500, exc.Message);
-            }
         }
 
         [HttpPut("{id}")]
+        [ProducesResponseType(typeof(FormsContatoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public IActionResult Put(
             Guid id, [FromBody] 
             FormsContatoViewModel contatoViewModel
         )
         {
-            try
-            {
-                var resultadoGet =  servicoContato.SelecionarPorId(id);
-                
-                if (resultadoGet.IsFailed)
+            var resultadoGet = servicoContato.SelecionarPorId(id);
+
+            if (resultadoGet.IsFailed)
+                return NotFound(new
                 {
-                    return NotFound(resultadoGet.Errors.Select(x => x.Message));
-                }
+                    Sucesso = false,
+                    Erros = resultadoGet.Errors.Select(x => x.Message)
+                });
 
-                var contato = mapeador.Map(contatoViewModel, resultadoGet.Value);
-                
-                var resultadoPut = servicoContato.Editar(contato);
+            var contato = mapeador.Map(contatoViewModel, resultadoGet.Value);
 
-                if (resultadoPut.IsFailed) 
-                {
-                    return BadRequest(new
-                    {
-                        Mensagem = "Erro ao editar o contato",
-                        Erros = resultadoPut.Errors.Select(x => x.Message),
-                        resultadoPut.IsFailed
-                    });
-                }
-
-                var enderecoContato = Request.GetDisplayUrl() + "/visualizacao-completa/" + resultadoPut.Value.Id;
-
-                return Ok(contatoViewModel);
-            }
-            catch (Exception exc)
-            {
-                return StatusCode(500, exc.Message);
-            }
+            return ProcessarResultado(servicoContato.Editar(contato), contatoViewModel);
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(ListarContatoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public IActionResult GetAll(
             StatusFavoritoEnum statusFavorito
         )
         {
-            try
+            logger.LogInformation("Selecionado todos os contatos " + statusFavorito);
+
+            var contatos = servicoContato.SelecionarTodos(statusFavorito).Value;
+
+            return Ok(new
             {
-                var resultadoGet = servicoContato.SelecionarTodos(statusFavorito);
-
-                if (resultadoGet.IsFailed)
-                {
-                    return BadRequest(new
-                    {
-                        Mensagem = "Erro ao selecionar a lista de contatos",
-                        Erros = resultadoGet.Errors.Select(x => x.Message),
-                        resultadoGet.IsFailed
-                    });
-                }
-
-                var contatosViewModel = mapeador.Map<List<ListarContatoViewModel>>(resultadoGet.Value);
-
-                return Ok(contatosViewModel);
-
-            }
-            catch (Exception exc)
-            {
-                return StatusCode(500, exc.Message);
-            }
+                Sucesso = true,
+                Dados = mapeador.Map<List<ListarContatoViewModel>>(contatos),
+                QtdRegistros = contatos.Count
+            });
         }
 
         [HttpGet("visualizacao-completa/{id}")]
+        [ProducesResponseType(typeof(VisualizarContatoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public IActionResult GetCompleteById(
             Guid id
         )
         {
+            var contatoResult = servicoContato.SelecionarPorId(id);
 
-            try
-            {
-                var resultadoGet = servicoContato.SelecionarPorId(id);
-
-                if (resultadoGet.IsFailed)
+            if (contatoResult.IsFailed)
+                return NotFound(new
                 {
-                    return BadRequest(new
-                    {
-                        Mensagem = "Erro ao selecionar o contato por Id",
-                        Erros = resultadoGet.Errors.Select(x => x.Message),
-                        resultadoGet.IsFailed
-                    });
-                }
+                    Sucesso = false,
+                    Erros = contatoResult.Errors.Select(x => x.Message)
+                });
 
-                var contatoViewModel = mapeador.Map<VisualizarContatoViewModel>(resultadoGet.Value);
-
-                return Ok(contatoViewModel);
-            }
-            catch (Exception exc)
+            return Ok(new
             {
-                return StatusCode(500, exc.Message);
-            }
+                Sucesso = true,
+                Dados = mapeador.Map<VisualizarContatoViewModel>(contatoResult)
+            });
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
         public IActionResult DeleteById( Guid id ) 
         {
+            var resultadoSelecao = servicoContato.SelecionarPorId(id);
 
-            try
-            {
-                var resultado = servicoContato.Excluir(id);
-
-                if (resultado.IsFailed)
+            if (resultadoSelecao.IsFailed)
+                return NotFound(new
                 {
-                    return BadRequest(new
-                    {
-                        Mensagem = "Erro ao excluir o contato por Id",
-                        Erros = resultado.Errors.Select(x => x.Message),
-                        resultado.IsFailed
-                    });
-                }
+                    Sucesso = false,
+                    Erros = resultadoSelecao.Errors.Select(x => x.Message)
+                });
 
-                return NoContent();
-            }
-            catch (Exception exc)
+            return ProcessarResultado(servicoContato.Excluir(resultadoSelecao.Value));
+        }
+
+        private IActionResult ProcessarResultado(Result<Contato> contatoResult, FormsContatoViewModel contatoViewModel = null)
+        {
+            if (contatoResult.IsFailed)
+                return BadRequest(new
+                {
+                    Sucesso = false,
+                    Erros = contatoResult.Errors.Select(x => x.Message)
+                });
+
+            return Ok(new
             {
-                return StatusCode(500, exc.Message);
-            }
+                Sucesso = true,
+                Dados = contatoViewModel
+            });
         }
     }
 }
