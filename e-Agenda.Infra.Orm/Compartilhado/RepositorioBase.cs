@@ -39,5 +39,10 @@ namespace e_Agenda.Infra.Orm.Compartilhado
         {
             return registros.ToList();
         }
+
+        public virtual async Task<List<TEntity>> SelecionarTodosAsync()
+        {
+            return await registros.ToListAsync();
+        }
     }
 }

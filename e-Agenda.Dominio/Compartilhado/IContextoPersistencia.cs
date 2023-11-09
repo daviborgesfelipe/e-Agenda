@@ -5,5 +5,7 @@
         void DesfazerAlteracoes();
 
         void GravarDados();
+
+        Task<bool> GravarDadosAsync();
     }
 }

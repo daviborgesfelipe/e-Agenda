@@ -19,7 +19,10 @@ namespace e_Agenda.WebApp
             builder.Services.ConfigurarInjecaoDependencia(builder.Configuration);
             builder.Services.ConfigurarSwagger();
 
-            builder.Services.AddControllers();
+            builder.Services.AddControllers(config =>
+            {
+                config.Filters.Add<SerilogActionFilter>();
+            });
 
             var app = builder.Build();
 

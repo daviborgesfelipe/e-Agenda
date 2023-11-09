@@ -14,6 +14,13 @@ namespace e_Agenda.Infra.Orm.Compartilhado
         {
         }
 
+        public async Task<bool> GravarDadosAsync()
+        {
+            int registrosAfetados = await SaveChangesAsync();
+
+            return registrosAfetados > 0;
+        }
+
         public void GravarDados()
         {
             SaveChanges();

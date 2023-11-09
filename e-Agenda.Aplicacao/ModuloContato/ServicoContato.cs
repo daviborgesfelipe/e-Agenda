@@ -18,7 +18,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             this.contextoPersistencia = contexto;
         }
 
-        public Result<Contato> Inserir(Contato contato)
+        public async Task<Result<Contato>> Inserir(Contato contato)
         {
             Log.Logger.Debug("Tentando inserir contato... {@c}", contato);
 
@@ -31,7 +31,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             {
                 repositorioContato.Inserir(contato);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Contato {ContatoId} inserido com sucesso", contato.Id);
 
@@ -49,7 +49,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             }
         }
 
-        public Result<Contato> Editar(Contato contato)
+        public async Task<Result<Contato>> Editar(Contato contato)
         {
             Log.Logger.Debug("Tentando editar contato... {@c}", contato);
 
@@ -69,7 +69,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             {
                 repositorioContato.Editar(contato);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Contato {ContatoId} editado com sucesso", contato.Id);
             }
@@ -87,17 +87,17 @@ namespace e_Agenda.Aplicacao.ModuloContato
             return Result.Ok(contato);
         }
 
-        public Result Excluir(Guid id)
+        public async Task<Result> Excluir(Guid id)
         {
             var contatoResult = SelecionarPorId(id);
 
             if (contatoResult.IsSuccess)
-                return Excluir(contatoResult.Value);
+                return await Excluir(contatoResult.Value);
 
             return Result.Fail(contatoResult.Errors);
         }
 
-        public Result Excluir(Contato contato)
+        public async Task<Result> Excluir(Contato contato)
         {
             Log.Logger.Debug("Tentando excluir contato... {@c}", contato);
 
@@ -105,7 +105,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             {
                 repositorioContato.Excluir(contato);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Contato {ContatoId} editado com sucesso", contato.Id);
 
@@ -123,13 +123,13 @@ namespace e_Agenda.Aplicacao.ModuloContato
             }
         }
 
-        public Result<List<Contato>> SelecionarTodos(StatusFavoritoEnum statusFavorito)
+        public async Task<Result<List<Contato>>> SelecionarTodos(StatusFavoritoEnum statusFavorito)
         {
             Log.Logger.Debug("Tentando selecionar contatos...");
 
             try
             {
-                var contatos = repositorioContato.SelecionarTodos(statusFavorito);
+                var contatos = await repositorioContato.SelecionarTodosAsync(statusFavorito);
 
                 Log.Logger.Information("Contatos selecionados com sucesso");
 
