@@ -10,25 +10,26 @@ namespace e_Agenda.Infra.Orm.ModuloTarefa
         public RepositorioTarefaOrm(IContextoPersistencia contextoPersistencia) : base(contextoPersistencia)
         {
         }
-        public override Tarefa SelecionarPorId(Guid id)
+
+        public override async Task<Tarefa> SelecionarPorIdAsync(Guid id)
         {
-            return registros
+            return await registros
                 .Include(x => x.Itens)
-                .SingleOrDefault(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public List<Tarefa> SelecionarTodos(StatusTarefaEnum status)
+        public async Task<List<Tarefa>> SelecionarTodosAsync(StatusTarefaEnum status)
         {
             if (status == StatusTarefaEnum.Concluidas)
-                return registros
-                    .Where(x => x.PercentualConcluido == 100).ToList();
+                return await registros
+                    .Where(x => x.PercentualConcluido == 100).ToListAsync();
 
             else if (status == StatusTarefaEnum.Pendentes)
-                return registros
-                    .Where(x => x.PercentualConcluido < 100).ToList();
+                return await registros
+                    .Where(x => x.PercentualConcluido < 100).ToListAsync();
 
             else
-                return registros.ToList();
+                return await registros.ToListAsync();
         }
     }
 }

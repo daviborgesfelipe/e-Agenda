@@ -87,7 +87,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
 
         public async Task<Result<Contato>> EditarAsync(Contato contato)
         {
-            repositorioContato.Editar(contato);
+            repositorioContato.EditarAsync(contato);
 
             await contextoPersistencia.GravarDadosAsync();
 
@@ -110,7 +110,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
 
             try
             {
-                repositorioContato.Excluir(contato);
+                repositorioContato.ExcluirAsync(contato);
 
                 await contextoPersistencia.GravarDadosAsync();
 
@@ -189,7 +189,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             {
                 contato.ConfigurarFavorito();
 
-                repositorioContato.Editar(contato);
+                repositorioContato.EditarAsync(contato);
 
                 contextoPersistencia.GravarDados();
 

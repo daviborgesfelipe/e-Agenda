@@ -40,6 +40,19 @@ namespace e_Agenda.Infra.Orm.Compartilhado
             return registros.ToList();
         }
 
+
+        public virtual async Task<bool> EditarAsync(TEntity registro)
+        {
+            registros.Update(registro);
+            return true;
+        }
+
+        public virtual async Task<bool> ExcluirAsync(TEntity registro)
+        {
+            registros.Remove(registro);
+            return true;
+        }
+
         public virtual async Task<bool> InserirAsync(TEntity novoRegistro)
         {
             await registros.AddAsync(novoRegistro);
@@ -56,5 +69,7 @@ namespace e_Agenda.Infra.Orm.Compartilhado
         {
             return await registros.ToListAsync();
         }
+
+
     }
 }

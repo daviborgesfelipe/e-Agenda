@@ -2,15 +2,9 @@
 {
     public interface IRepositorio<T> where T : EntidadeBase<T>
     {
-        void Inserir(T novoRegistro);
+        Task<bool> EditarAsync(T registro);
 
-        void Editar(T registro);
-
-        void Excluir(T registro);
-
-        List<T> SelecionarTodos();
-
-        T SelecionarPorId(Guid numero);
+        Task<bool> ExcluirAsync(T registro);
 
         Task<bool> InserirAsync(T novoRegistro);
 

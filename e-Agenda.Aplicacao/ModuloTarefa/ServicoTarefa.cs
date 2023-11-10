@@ -18,7 +18,7 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             this.contextoPersistencia = contexto;
         }
 
-        public Result<Tarefa> Inserir(Tarefa tarefa)
+        public async Task<Result<Tarefa>> InserirAsync(Tarefa tarefa)
         {
             Log.Logger.Debug("Tentando inserir tarefa... {@t}", tarefa);
 
@@ -29,9 +29,9 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
 
             try
             {
-                repositorioTarefa.Inserir(tarefa);
+                await repositorioTarefa.InserirAsync(tarefa);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Tarefa {TarefaId} inserida com sucesso", tarefa.Id);
 
@@ -49,7 +49,7 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             }
         }
 
-        public Result<Tarefa> Editar(Tarefa tarefa)
+        public async Task<Result<Tarefa>> EditarAsync(Tarefa tarefa)
         {
             Log.Logger.Debug("Tentando editar tarefa... {@t}", tarefa);
 
@@ -61,9 +61,9 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             {
                 tarefa.CalcularPercentualConcluido();
 
-                repositorioTarefa.Editar(tarefa);
+                await repositorioTarefa.EditarAsync(tarefa);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Tarefa {TarefaId} editada com sucesso", tarefa.Id);
             }
@@ -81,7 +81,7 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             return Result.Ok(tarefa);
         }
 
-        public Result<Tarefa> AtualizarItens(Tarefa tarefa,
+        public async Task<Result<Tarefa>> AtualizarItens(Tarefa tarefa,
             List<ItemTarefa> itensConcluidos, List<ItemTarefa> itensPendentes)
         {
             foreach (var item in itensConcluidos)
@@ -90,28 +90,28 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             foreach (var item in itensPendentes)
                 tarefa.MarcarPendente(item.Id);
 
-            return Editar(tarefa);
+            return await EditarAsync(tarefa);
         }
 
-        public Result Excluir(Guid id)
+        public async Task<Result> ExcluirAsync(Guid id)
         {
-            var tarefaResult = SelecionarPorId(id);
+            var resultadoGet = await SelecionarPorIdAsync(id);
 
-            if (tarefaResult.IsSuccess)
-                return Excluir(tarefaResult.Value);
+            if (resultadoGet.IsSuccess)
+                return await ExcluirAsync(resultadoGet.Value);
 
-            return Result.Fail(tarefaResult.Errors);
+            return Result.Fail(resultadoGet.Errors);
         }
 
-        public Result Excluir(Tarefa tarefa)
+        public async Task<Result> ExcluirAsync(Tarefa tarefa)
         {
             Log.Logger.Debug("Tentando excluir tarefa... {@t}", tarefa);
 
             try
             {
-                repositorioTarefa.Excluir(tarefa);
+                await repositorioTarefa.ExcluirAsync(tarefa);
 
-                contextoPersistencia.GravarDados();
+                await contextoPersistencia.GravarDadosAsync();
 
                 Log.Logger.Information("Tarefa {TarefaId} editada com sucesso", tarefa.Id);
 
@@ -129,13 +129,13 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             }
         }
 
-        public Result<List<Tarefa>> SelecionarTodos(StatusTarefaEnum statusSelecionado)
+        public async Task<Result<List<Tarefa>>> SelecionarTodosAsync(StatusTarefaEnum statusSelecionado)
         {
             Log.Logger.Debug("Tentando selecionar tarefas...");
 
             try
             {
-                var tarefas = repositorioTarefa.SelecionarTodos(statusSelecionado);
+                var tarefas = await repositorioTarefa.SelecionarTodosAsync(statusSelecionado);
 
                 Log.Logger.Information("Tarefas selecionadas com sucesso");
 
@@ -151,13 +151,13 @@ namespace e_Agenda.Aplicacao.ModuloTarefa
             }
         }
 
-        public Result<Tarefa> SelecionarPorId(Guid id)
+        public async Task<Result<Tarefa>> SelecionarPorIdAsync(Guid id)
         {
             Log.Logger.Debug("Tentando selecionar tarefa {TarefaId}...", id);
 
             try
             {
-                var tarefa = repositorioTarefa.SelecionarPorId(id);
+                var tarefa = await repositorioTarefa.SelecionarPorIdAsync(id);
 
                 if (tarefa == null)
                 {

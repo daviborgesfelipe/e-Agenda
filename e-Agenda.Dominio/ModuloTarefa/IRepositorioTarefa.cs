@@ -4,6 +4,6 @@ namespace e_Agenda.Dominio.ModuloTarefa
 {
     public interface IRepositorioTarefa : IRepositorio<Tarefa>
     {
-        List<Tarefa> SelecionarTodos(StatusTarefaEnum status);
+        Task<List<Tarefa>> SelecionarTodosAsync(StatusTarefaEnum status);
     }
 }

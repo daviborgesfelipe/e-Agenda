@@ -58,7 +58,7 @@ namespace e_Agenda.Aplicacao.ModuloCompromisso
 
             try
             {
-                repositorioCompromisso.Excluir(compromisso);
+                repositorioCompromisso.ExcluirAsync(compromisso);
 
                 await contextoPersistencia.GravarDadosAsync();
 
@@ -90,7 +90,7 @@ namespace e_Agenda.Aplicacao.ModuloCompromisso
 
         public async Task<Result<Compromisso>> EditarAsync(Compromisso compromisso)
         {
-            repositorioCompromisso.Editar(compromisso);
+            repositorioCompromisso.EditarAsync(compromisso);
 
             await contextoPersistencia.GravarDadosAsync();
 

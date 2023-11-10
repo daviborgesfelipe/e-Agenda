@@ -19,13 +19,6 @@ namespace e_Agenda.Infra.Orm.ModuloContato
                 .SingleOrDefault(x => x.Id == id);
         }
 
-        public async Task<Contato> SelecionarPorIdAsync(Guid id)
-        {
-           return await registros
-                .Include(x => x.Compromissos)
-                .SingleOrDefaultAsync(x => x.Id == id);
-        }
-
         public List<Contato> SelecionarTodos(StatusFavoritoEnum statusFavorito)
         {
             if (statusFavorito == StatusFavoritoEnum.Todos)
@@ -40,6 +33,14 @@ namespace e_Agenda.Infra.Orm.ModuloContato
                 return registros
                    .Where(x => x.Favorito == false)
                    .ToList();
+        }
+
+
+        public async Task<Contato> SelecionarPorIdAsync(Guid id)
+        {
+           return await registros
+                .Include(x => x.Compromissos)
+                .SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<List<Contato>> SelecionarTodosAsync(StatusFavoritoEnum statusFavorito)

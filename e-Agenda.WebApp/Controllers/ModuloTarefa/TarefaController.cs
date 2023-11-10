@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using e_Agenda.Aplicacao.ModuloDespesa;
 using e_Agenda.Aplicacao.ModuloTarefa;
 using e_Agenda.Dominio.ModuloTarefa;
+using e_Agenda.WebApp.ViewModels.ModuloDespesa.Despesa;
 using e_Agenda.WebApp.ViewModels.ModuloTarefa;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,13 +21,16 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpPost]
-        public IActionResult Post(
+        [ProducesResponseType(typeof(FormsTarefaViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> Post(
             FormsTarefaViewModel tarefaViewModel
         )
         {
             var tarefa = mapeador.Map<Tarefa>(tarefaViewModel);
 
-            var resultado = servicoTarefa.Inserir(tarefa);
+            var resultado = await servicoTarefa.InserirAsync(tarefa);
 
             if (resultado.IsSuccess)
             {
@@ -43,13 +48,15 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpGet]
-        public IActionResult GetAll(StatusTarefaEnum statusTarefa)
+        [ProducesResponseType(typeof(ListarTarefaViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> GetAll(StatusTarefaEnum statusTarefa)
         {
-            var tarefas = servicoTarefa.SelecionarTodos(statusTarefa).Value;
+            var tarefas = await servicoTarefa.SelecionarTodosAsync(statusTarefa);
 
             var tarefaViewModel = mapeador.Map<List<ListarTarefaViewModel>>(tarefas);
 
-            var resultado = servicoTarefa.SelecionarTodos(StatusTarefaEnum.Todos);
+            var resultado = await servicoTarefa.SelecionarTodosAsync(StatusTarefaEnum.Todos);
 
             string[] erros = resultado
                 .Errors.Select(e => e.Message).ToArray();
@@ -70,17 +77,20 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpGet("visualizacao-completa/{id}")]
-        public IActionResult GetCompleteById(
+        [ProducesResponseType(typeof(VisualizarTarefaViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> GetCompleteById(
         Guid id
         )
         {
-            var tarefa = servicoTarefa.SelecionarPorId(id).Value;
+            var tarefa = await servicoTarefa.SelecionarPorIdAsync(id);
 
-            var tarefaViewModel = mapeador.Map<ListarTarefaViewModel>(tarefa);
+            var tarefaViewModel = mapeador.Map<VisualizarTarefaViewModel>(tarefa);
 
-            tarefa.CalcularPercentualConcluido();
+            tarefa.Value.CalcularPercentualConcluido();
 
-            var resultado = servicoTarefa.SelecionarPorId(id);
+            var resultado = await servicoTarefa.SelecionarPorIdAsync(id);
 
             string[] erros = resultado
                 .Errors.Select(e => e.Message).ToArray();
@@ -101,16 +111,20 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(
-        Guid id, [FromBody]
+        [ProducesResponseType(typeof(FormsTarefaViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> Put(
+            Guid id,
             FormsTarefaViewModel tarefaVIewModel
         )
         {
-            var tarefaDb = servicoTarefa.SelecionarPorId(id).Value;
+            var tarefaDb = await servicoTarefa.SelecionarPorIdAsync(id);
 
             var tarefa = mapeador.Map(tarefaVIewModel, tarefaDb);
 
-            var resultado = servicoTarefa.Editar(tarefaDb);
+            var resultado = await servicoTarefa.EditarAsync(tarefaDb.Value);
 
             string[] erros = resultado
                 .Errors.Select(e => e.Message).ToArray();
@@ -126,6 +140,39 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
                     Mensagem = "Erro ao editar o contato",
                     Erros = erros,
                     resultado.IsFailed
+                });
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> Excluir(Guid id)
+        {
+            var resultadoGet = await servicoTarefa.SelecionarPorIdAsync(id);
+
+            if (resultadoGet.IsFailed)
+                return NotFound(resultadoGet.Errors);
+
+            var resultadoDelete = await servicoTarefa.ExcluirAsync(resultadoGet.Value);
+
+            string[] erros = resultadoDelete
+                .Errors.Select(e => e.Message).ToArray();
+
+            if (resultadoDelete.IsSuccess)
+            {
+                return NoContent();
+            }
+            else
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao editar o contato",
+                    Erros = erros,
+                    resultadoDelete.IsFailed
+
                 });
             }
         }

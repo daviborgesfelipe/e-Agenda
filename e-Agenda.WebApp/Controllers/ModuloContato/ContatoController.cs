@@ -72,13 +72,23 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
         {
             logger.LogInformation("Selecionado todos os contatos " + statusFavorito);
 
-            var contatos = await servicoContato.SelecionarTodosAsync(statusFavorito);
+            var resultadoGetAll = await servicoContato.SelecionarTodosAsync(statusFavorito);
+
+            if (resultadoGetAll.IsFailed)
+            {
+                return BadRequest(new
+                {
+                    Mensagem = "Erro ao selecionar a lista de contatos",
+                    Erros = resultadoGetAll.Errors.Select(e => e.Message).ToArray(),
+                    resultadoGetAll.IsFailed
+                });
+            }
 
             return Ok(new
             {
                 Sucesso = true,
-                Dados = mapeador.Map<List<ListarContatoViewModel>>(contatos.Value),
-                QtdRegistros = contatos.Value.Count
+                Dados = mapeador.Map<List<ListarContatoViewModel>>(resultadoGetAll.Value),
+                QtdRegistros = resultadoGetAll.Value.Count
             });
         }
 
