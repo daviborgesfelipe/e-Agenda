@@ -18,7 +18,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             this.contextoPersistencia = contexto;
         }
 
-        public async Task<Result<Contato>> Inserir(Contato contato)
+        public async Task<Result<Contato>> InserirAsync(Contato contato)
         {
             Log.Logger.Debug("Tentando inserir contato... {@c}", contato);
 
@@ -29,7 +29,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
 
             try
             {
-                repositorioContato.Inserir(contato);
+                await repositorioContato.InserirAsync(contato);
 
                 await contextoPersistencia.GravarDadosAsync();
 
@@ -53,7 +53,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
         {
             Log.Logger.Debug("Tentando editar contato... {@c}", contato);
 
-            Contato contatoExistente = repositorioContato.SelecionarPorId(contato.Id);
+            var contatoExistente = await repositorioContato.SelecionarPorIdAsync(contato.Id);
 
             if (contatoExistente == null)
             {
@@ -67,11 +67,11 @@ namespace e_Agenda.Aplicacao.ModuloContato
 
             try
             {
-                repositorioContato.Editar(contato);
-
-                await contextoPersistencia.GravarDadosAsync();
+                await EditarAsync(contatoExistente);
 
                 Log.Logger.Information("Contato {ContatoId} editado com sucesso", contato.Id);
+
+                return Result.Ok(contato);
             }
             catch (Exception ex)
             {
@@ -83,13 +83,20 @@ namespace e_Agenda.Aplicacao.ModuloContato
 
                 return Result.Fail(msgErro);
             }
+        }
 
-            return Result.Ok(contato);
+        public async Task<Result<Contato>> EditarAsync(Contato contato)
+        {
+            repositorioContato.Editar(contato);
+
+            await contextoPersistencia.GravarDadosAsync();
+
+            return Result.Ok();
         }
 
         public async Task<Result> Excluir(Guid id)
         {
-            var contatoResult = SelecionarPorId(id);
+            var contatoResult = await SelecionarPorIdAsync(id);
 
             if (contatoResult.IsSuccess)
                 return await Excluir(contatoResult.Value);
@@ -123,7 +130,7 @@ namespace e_Agenda.Aplicacao.ModuloContato
             }
         }
 
-        public async Task<Result<List<Contato>>> SelecionarTodos(StatusFavoritoEnum statusFavorito)
+        public async Task<Result<List<Contato>>> SelecionarTodosAsync(StatusFavoritoEnum statusFavorito)
         {
             Log.Logger.Debug("Tentando selecionar contatos...");
 
@@ -145,13 +152,13 @@ namespace e_Agenda.Aplicacao.ModuloContato
             }
         }
 
-        public Result<Contato> SelecionarPorId(Guid id)
+        public async Task<Result<Contato>> SelecionarPorIdAsync(Guid id)
         {
             Log.Logger.Debug("Tentando selecionar contato {ContatoId}...", id);
 
             try
             {
-                var contato = repositorioContato.SelecionarPorId(id);
+                var contato = await repositorioContato.SelecionarPorIdAsync(id);
 
                 if (contato == null)
                 {

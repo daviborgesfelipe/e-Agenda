@@ -11,5 +11,11 @@
         List<T> SelecionarTodos();
 
         T SelecionarPorId(Guid numero);
+
+        Task<bool> InserirAsync(T novoRegistro);
+
+        Task<List<T>> SelecionarTodosAsync();
+        
+        Task<T> SelecionarPorIdAsync(Guid numero);
     }
 }

@@ -3,7 +3,6 @@ using e_Agenda.Aplicacao.ModuloContato;
 using e_Agenda.Dominio.ModuloContato;
 using e_Agenda.WebApp.ViewModels.ModuloContato;
 using FluentResults;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloContato
@@ -33,7 +32,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
         {
             var contatoMap = mapeador.Map<Contato>(contatoViewModel);
 
-            var resultadoPost = await servicoContato.Inserir(contatoMap);
+            var resultadoPost = await servicoContato.InserirAsync(contatoMap);
 
             return ProcessarResultado(resultadoPost, contatoViewModel);
         }
@@ -44,11 +43,11 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Put(
-            Guid id, [FromBody] 
+            Guid id, 
             FormsContatoViewModel contatoViewModel
         )
         {
-            var resultadoGet = servicoContato.SelecionarPorId(id);
+            var resultadoGet = await servicoContato.SelecionarPorIdAsync(id);
 
             if (resultadoGet.IsFailed)
                 return NotFound(new
@@ -73,7 +72,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
         {
             logger.LogInformation("Selecionado todos os contatos " + statusFavorito);
 
-            var contatos = await servicoContato.SelecionarTodos(statusFavorito);
+            var contatos = await servicoContato.SelecionarTodosAsync(statusFavorito);
 
             return Ok(new
             {
@@ -91,7 +90,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
             Guid id
         )
         {
-            var contatoResult = servicoContato.SelecionarPorId(id);
+            var contatoResult = await servicoContato.SelecionarPorIdAsync(id);
 
             if (contatoResult.IsFailed)
                 return NotFound(new
@@ -114,7 +113,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> DeleteById( Guid id ) 
         {
-            var resultadoSelecao = servicoContato.SelecionarPorId(id);
+            var resultadoSelecao = await servicoContato.SelecionarPorIdAsync(id);
 
             if (resultadoSelecao.IsFailed)
                 return NotFound(new
