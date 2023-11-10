@@ -41,5 +41,43 @@ namespace e_Agenda.Infra.Orm.ModuloCompromisso
                 .Where(x => x.Data < dataDeHoje)
                 .ToList();
         }
+
+
+
+        public override async Task<Compromisso> SelecionarPorIdAsync(Guid id)
+        {
+            return await registros
+                .Include(x => x.Contato)
+                .SingleOrDefaultAsync(x => x.Id == id);
+        }
+
+        public override async Task<List<Compromisso>> SelecionarTodosAsync()
+        {
+            return await registros
+                .Include(x => x.Contato)
+                .ToListAsync();
+        }
+
+        public async Task<List<Compromisso>> SelecionarCompromissosFuturosAsync(DateTime dataInicial, DateTime dataFinal)
+        {
+            return await registros
+                .Include(x => x.Contato)
+                .Where(x => x.Data >= dataInicial)
+                .Where(x => x.Data <= dataFinal)
+                .ToListAsync();
+        }
+
+        public async Task<List<Compromisso>> SelecionarCompromissosPassadosAsync(DateTime dataDeHoje)
+        {
+            return await registros
+                .Include(x => x.Contato)
+                .Where(x => x.Data < dataDeHoje)
+                .ToListAsync();
+        }
+
+        public Task<bool> ExcluirAsync(Compromisso novoRegistro)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

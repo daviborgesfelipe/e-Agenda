@@ -12,6 +12,9 @@ namespace e_Agenda.WebApp.Config.AutomapperConfig
                 .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
                 .ForMember(destino => destino.HoraInicio, opt => opt.MapFrom(origem => origem.HoraInicio.ToString(@"hh\:mm")))
                 .ForMember(destino => destino.HoraTermino, opt => opt.MapFrom(origem => origem.HoraTermino.ToString(@"hh\:mm")));
+
+            CreateMap<FormsCompromissoViewModel, Compromisso>();
+            CreateMap<Compromisso, VisualizarCompromissoViewModel>();
         }
     }
 }

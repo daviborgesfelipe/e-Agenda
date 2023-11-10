@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using e_Agenda.Aplicacao.ModuloCompromisso;
+using e_Agenda.Aplicacao.ModuloContato;
 using e_Agenda.Dominio.ModuloCompromisso;
 using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
+using e_Agenda.WebApp.ViewModels.ModuloContato;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
@@ -23,136 +26,179 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         }
 
         [HttpPost]
-        public IActionResult Post(
-            [FromBody] FormsCompromissoViewModel compromissoViewModel
-        )
-        {
-            var compromisso = mapeador.Map<Compromisso>(compromissoViewModel);
-
-            var resultado = servicoCompromisso.Inserir(compromisso);
-
-            if (resultado.IsSuccess)
-            {
-                return Created("registration", compromissoViewModel);
-            }
-
-            string[] erros = resultado.Errors.Select(e => e.Message).ToArray();
-
-            return BadRequest(new
-            {
-                Mensagem = "Erro ao inserir o compromisso",
-                Erros = erros,
-                resultado.IsFailed
-            });
-        }
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var compromissos = servicoCompromisso.SelecionarTodos().Value;
-
-            var compromissosViewModel = mapeador.Map<ListarCompromissoViewModel>(compromissos);
-
-            var resultado = servicoCompromisso.SelecionarTodos();
-
-            string[] erros = resultado
-                .Errors.Select(e => e.Message).ToArray();
-
-            if (resultado.IsSuccess)
-            {
-                return Ok(compromissosViewModel);
-            }
-            else
-            {
-                return BadRequest(new
-                {
-                    Mensagem = "Erro ao selecionar a lista de contatos",
-                    Erros = erros,
-                    resultado.IsFailed
-                });
-            }
-        }
-
-        [HttpGet("visualizacao-completa/{id}")]
-        public IActionResult GetCompleteById(
-            Guid id
-        )
-        {
-            var compromisso = servicoCompromisso.SelecionarPorId(id).Value;
-
-            var compromissoViewModel = mapeador.Map<ListarCompromissoViewModel>(compromisso);
-
-            var resultado = servicoCompromisso.SelecionarPorId(id);
-
-            string[] erros = resultado
-                .Errors.Select(e => e.Message).ToArray();
-
-            if (resultado.IsSuccess)
-            {
-                return Ok(compromissoViewModel);
-            }
-            else
-            {
-                return BadRequest(new
-                {
-                    Mensagem = "Erro ao selecionar o compromisso por Id",
-                    Erros = erros,
-                    resultado.IsFailed
-                });
-            }
-        }
-
-        [HttpPut("{id}")]
-        public IActionResult Put(
-            Guid id, [FromBody]
+        [ProducesResponseType(typeof(FormsCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> Post(
             FormsCompromissoViewModel compromissoViewModel
         )
         {
-            var compromissoDb = servicoCompromisso.SelecionarPorId(id).Value;
+            var compromissoMap = mapeador.Map<Compromisso>(compromissoViewModel);
 
-            var compromisso = mapeador.Map(compromissoViewModel, compromissoDb);
+            var resultadoPut = await servicoCompromisso.InserirAsync(compromissoMap);
 
-            var resultado = servicoCompromisso.Editar(compromissoDb);
+            return ProcessarResultado(resultadoPut, compromissoViewModel);
+        }
 
-            string[] erros = resultado
-                .Errors.Select(e => e.Message).ToArray();
+        [HttpGet]
+        [ProducesResponseType(typeof(ListarCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> GetAll()
+        {
 
-            if (resultado.IsSuccess)
-            {
-                return NoContent();
-            }
-            else
+            var resultadoGetAll = await servicoCompromisso.SelecionarTodosAsync();
+
+            if (resultadoGetAll.IsFailed)
             {
                 return BadRequest(new
                 {
-                    Mensagem = "Erro ao editar o compromisso",
-                    Erros = erros,
-                    resultado.IsFailed
+                    Mensagem = "Erro ao selecionar a lista de compromissos",
+                    Erros = resultadoGetAll.Errors.Select(e => e.Message).ToArray(),
+                    resultadoGetAll.IsFailed
                 });
             }
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Dados = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGetAll.Value),
+                QtdRegistros = resultadoGetAll.Value.Count
+            });
+        }
+
+        [HttpGet("visualizacao-completa/{id}")]
+        [ProducesResponseType(typeof(VisualizarCompromissoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> GetCompleteById(
+            Guid id
+        )
+        {
+            var resultadoGetComplete = await servicoCompromisso.SelecionarPorIdAsync(id);
+
+            if (resultadoGetComplete.IsFailed)
+                return NotFound(new
+                {
+                    Sucesso = false,
+                    Erros = resultadoGetComplete.Errors.Select(x => x.Message)
+                });
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Dados = mapeador.Map<VisualizarCompromissoViewModel>(resultadoGetComplete)
+            });
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(FormsCompromissoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> Put(
+            Guid id,
+            FormsCompromissoViewModel compromissoViewModel
+        )
+        {
+            var resultadoGet = await servicoCompromisso.SelecionarPorIdAsync(id);
+
+            if (resultadoGet.IsFailed)
+                return NotFound(new
+                {
+                    Sucesso = false,
+                    Erros = resultadoGet.Errors.Select(x => x.Message)
+                });
+
+            var compromisso = mapeador.Map(compromissoViewModel, resultadoGet);
+
+            var resultadoPut = await servicoCompromisso.EditarAsync(resultadoGet.Value);
+
+            return ProcessarResultado(resultadoPut, compromissoViewModel);
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteById(Guid id)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(typeof(string[]), 400)]
+        [ProducesResponseType(typeof(string[]), 404)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> DeleteById(Guid id)
         {
-            var resultado = servicoCompromisso.Excluir(id);
+            var resultadoGet = await servicoCompromisso.SelecionarPorIdAsync(id);
 
-            string[] erros = resultado
-                .Errors.Select(e => e.Message).ToArray();
+            if (resultadoGet.IsFailed)
+                return NotFound(new
+                {
+                    Sucesso = false,
+                    Erros = resultadoGet.Errors.Select(x => x.Message)
+                });
 
-            if (resultado.IsSuccess)
+            var resultadoDelete = await servicoCompromisso.Excluir(resultadoGet.Value);
+
+            return ProcessarResultado(resultadoDelete);
+        }
+
+        [HttpGet("hoje/{dataAtual:datetime}")]
+        [ProducesResponseType(typeof(ListarCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> SelecionarCompromissosDeHoje(DateTime dataAtual)
+        {
+            var resultadoGet = await servicoCompromisso.SelecionarCompromissosFuturosAsync(dataAtual, dataAtual);
+
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet);
+
+            return Ok(new
             {
-                return NoContent();
-            }
-            else
+                Sucesso = true,
+                Dados = compromissoViewModel
+            });
+        }
+
+        [HttpGet("futuros/{dataInicial:datetime}={dataFinal:datetime}")]
+        [ProducesResponseType(typeof(ListarCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> SelecionarCompromissosFuturos(DateTime dataInicial, DateTime dataFinal)
+        {
+            var resultadoGet = await servicoCompromisso.SelecionarCompromissosFuturosAsync(dataInicial, dataFinal);
+
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet);
+
+            return Ok(new
             {
+                Sucesso = true,
+                Dados = compromissoViewModel
+            });
+        }
+
+        [HttpGet("passados/{dataAtual:datetime}")]
+        [ProducesResponseType(typeof(ListarCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(string[]), 500)]
+        public async Task<IActionResult> SelecionarCompromissosPassados(DateTime dataAtual)
+        {
+            var resultGet = await servicoCompromisso.SelecionarCompromissosPassadosAsync(dataAtual);
+
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultGet);
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Dados = compromissoViewModel
+            });
+        }
+
+        private IActionResult ProcessarResultado(Result<Compromisso> compromisso, FormsCompromissoViewModel compromissoViewModel = null)
+        {
+            if (compromisso.IsFailed)
                 return BadRequest(new
                 {
-                    Mensagem = "Erro ao excluir o compromisso por Id",
-                    Erros = erros,
-                    resultado.IsFailed
+                    Sucesso = false,
+                    Erros = compromisso.Errors.Select(x => x.Message)
                 });
-            }
+
+            return Ok(new
+            {
+                Sucesso = true,
+                Dados = compromissoViewModel
+            });
         }
     }
 }

@@ -7,5 +7,9 @@ namespace e_Agenda.Dominio.ModuloCompromisso
         List<Compromisso> SelecionarCompromissosFuturos(DateTime dataInicial, DateTime dataFinal);
 
         List<Compromisso> SelecionarCompromissosPassados(DateTime dataDeHoje);
+
+        Task<List<Compromisso>> SelecionarCompromissosFuturosAsync(DateTime dataInicial, DateTime dataFinal);
+
+        Task<List<Compromisso>> SelecionarCompromissosPassadosAsync(DateTime dataDeHoje);
     }
 }
