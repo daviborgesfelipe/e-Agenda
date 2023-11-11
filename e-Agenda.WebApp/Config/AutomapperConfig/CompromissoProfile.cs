@@ -8,13 +8,19 @@ namespace e_Agenda.WebApp.Config.AutomapperConfig
     {
         public CompromissoProfile()
         {
+            CreateMap<InserirCompromissoViewModel, Compromisso>();
+            CreateMap<EditarCompromissoViewModel, Compromisso>();
+
             CreateMap<Compromisso, ListarCompromissoViewModel>()
                 .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
-                .ForMember(destino => destino.HoraInicio, opt => opt.MapFrom(origem => origem.HoraInicio.ToString(@"hh\:mm")))
-                .ForMember(destino => destino.HoraTermino, opt => opt.MapFrom(origem => origem.HoraTermino.ToString(@"hh\:mm")));
+                .ForMember(destino => destino.HoraInicio, opt => opt.MapFrom(origem => origem.HoraInicio.ToString()))
+                .ForMember(destino => destino.HoraTermino, opt => opt.MapFrom(origem => origem.HoraTermino.ToString()));
 
-            CreateMap<FormsCompromissoViewModel, Compromisso>();
-            CreateMap<Compromisso, VisualizarCompromissoViewModel>();
+            CreateMap<Compromisso, VisualizarCompromissoViewModel>()
+                .ForMember(destino => destino.Data, opt => opt.MapFrom(origem => origem.Data.ToShortDateString()))
+                .ForMember(destino => destino.HoraInicio, opt => opt.MapFrom(origem => origem.HoraInicio.ToString()))
+                .ForMember(destino => destino.HoraTermino, opt => opt.MapFrom(origem => origem.HoraTermino.ToString()));
         }
     }
 }
+

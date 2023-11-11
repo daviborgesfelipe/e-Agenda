@@ -9,8 +9,14 @@ namespace e_Agenda.WebApp.Config.AutomapperConfig
         public ContatoProfile()
         {
             CreateMap<Contato, ListarContatoViewModel>();
+
             CreateMap<Contato, VisualizarContatoViewModel>();
+
             CreateMap<FormsContatoViewModel, Contato>();
+
+            CreateMap<InserirContatoViewModel, Contato>();
+
+            CreateMap<EditarContatoViewModel, Contato>();
         }
     }
 }

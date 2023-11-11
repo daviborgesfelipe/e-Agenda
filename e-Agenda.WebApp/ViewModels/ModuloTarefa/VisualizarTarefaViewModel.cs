@@ -9,7 +9,7 @@ namespace e_Agenda.WebApp.ViewModels.ModuloTarefa
         public string DataCriacao { get; set; }
         public string DataConclusao { get; set; }
 
-        public int QntdItens { get; set; }
+        public int QuantidadeItens { get; set; }
         public double PercentualConcluido { get; set; }
         public string Prioridade { get; set; }
         public string Situacao { get; set;}

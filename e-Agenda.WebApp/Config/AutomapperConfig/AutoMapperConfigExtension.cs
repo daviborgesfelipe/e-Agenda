@@ -8,6 +8,9 @@
             {
                 opt.AddProfile<ContatoProfile>();
                 opt.AddProfile<CompromissoProfile>();
+                opt.AddProfile<CategoriaProfile>();
+                opt.AddProfile<DespesaProfile>();
+                opt.AddProfile<TarefaProfile>();
             });
         }
     }
