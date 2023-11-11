@@ -1,5 +1,3 @@
-using e_Agenda.WebApp.Config;
-using e_Agenda.WebApp.Config.AutomapperConfig;
 using FluentValidation;
 using System.Globalization;
 
@@ -13,16 +11,18 @@ namespace e_Agenda.WebApp
 
             ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("pt-BR");
 
+            builder.Services.Configure<ApiBehaviorOptions>(config =>
+            {
+                config.SuppressModelStateInvalidFilter = true;
+            });
+
             builder.Services.ConfigurarLogger(builder.Logging);
 
             builder.Services.ConfigurarAutoMapper();
             builder.Services.ConfigurarInjecaoDependencia(builder.Configuration);
             builder.Services.ConfigurarSwagger();
-
-            builder.Services.AddControllers(config =>
-            {
-                config.Filters.Add<SerilogActionFilter>();
-            });
+            builder.Services.ConfigurarControllers();
+            //builder.Services.AddControllers();
 
             var app = builder.Build();
 
