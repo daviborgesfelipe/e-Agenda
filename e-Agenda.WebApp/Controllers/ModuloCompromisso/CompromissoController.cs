@@ -1,17 +1,13 @@
-﻿using AutoMapper;
-using e_Agenda.Aplicacao.ModuloCompromisso;
-using e_Agenda.Aplicacao.ModuloContato;
+﻿using e_Agenda.Aplicacao.ModuloCompromisso;
 using e_Agenda.Dominio.ModuloCompromisso;
+using e_Agenda.WebApp.Controllers.Shared;
 using e_Agenda.WebApp.ViewModels.ModuloCompromisso;
-using e_Agenda.WebApp.ViewModels.ModuloContato;
-using FluentResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
 {
     [Route("api/compromissos")]
     [ApiController]
-    public class CompromissoController : ControllerBase
+    public class CompromissoController : ApiControllerBase
     {
         ServicoCompromisso servicoCompromisso;
         private IMapper mapeador;
@@ -26,18 +22,18 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FormsCompromissoViewModel), 201)]
+        [ProducesResponseType(typeof(InserirCompromissoViewModel), 201)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Post(
-            FormsCompromissoViewModel compromissoViewModel
+            InserirCompromissoViewModel compromissoViewModel
         )
         {
             var compromissoMap = mapeador.Map<Compromisso>(compromissoViewModel);
 
             var resultadoPut = await servicoCompromisso.InserirAsync(compromissoMap);
 
-            return ProcessarResultado(resultadoPut, compromissoViewModel);
+            return ProcessarResultado(resultadoPut.ToResult(), compromissoViewModel);
         }
 
         [HttpGet]
@@ -86,18 +82,18 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
             return Ok(new
             {
                 Sucesso = true,
-                Dados = mapeador.Map<VisualizarCompromissoViewModel>(resultadoGetComplete)
+                Dados = mapeador.Map<VisualizarCompromissoViewModel>(resultadoGetComplete.Value)
             });
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(FormsCompromissoViewModel), 200)]
+        [ProducesResponseType(typeof(EditarCompromissoViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Put(
             Guid id,
-            FormsCompromissoViewModel compromissoViewModel
+            EditarCompromissoViewModel compromissoViewModel
         )
         {
             var resultadoGet = await servicoCompromisso.SelecionarPorIdAsync(id);
@@ -113,7 +109,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
 
             var resultadoPut = await servicoCompromisso.EditarAsync(resultadoGet.Value);
 
-            return ProcessarResultado(resultadoPut, compromissoViewModel);
+            return ProcessarResultado(resultadoPut.ToResult(), compromissoViewModel);
         }
 
         [HttpDelete("{id}")]
@@ -144,7 +140,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         {
             var resultadoGet = await servicoCompromisso.SelecionarCompromissosFuturosAsync(dataAtual, dataAtual);
 
-            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet);
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet.Value);
 
             return Ok(new
             {
@@ -160,7 +156,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         {
             var resultadoGet = await servicoCompromisso.SelecionarCompromissosFuturosAsync(dataInicial, dataFinal);
 
-            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet);
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultadoGet.Value);
 
             return Ok(new
             {
@@ -176,23 +172,7 @@ namespace e_Agenda.WebApp.Controllers.ModuloCompromisso
         {
             var resultGet = await servicoCompromisso.SelecionarCompromissosPassadosAsync(dataAtual);
 
-            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultGet);
-
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = compromissoViewModel
-            });
-        }
-
-        private IActionResult ProcessarResultado(Result<Compromisso> compromisso, FormsCompromissoViewModel compromissoViewModel = null)
-        {
-            if (compromisso.IsFailed)
-                return BadRequest(new
-                {
-                    Sucesso = false,
-                    Erros = compromisso.Errors.Select(x => x.Message)
-                });
+            var compromissoViewModel = mapeador.Map<List<ListarCompromissoViewModel>>(resultGet.Value);
 
             return Ok(new
             {

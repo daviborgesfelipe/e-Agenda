@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using e_Agenda.Aplicacao.ModuloDespesa;
-using e_Agenda.Aplicacao.ModuloTarefa;
+﻿using e_Agenda.Aplicacao.ModuloTarefa;
 using e_Agenda.Dominio.ModuloTarefa;
-using e_Agenda.WebApp.ViewModels.ModuloDespesa.Despesa;
 using e_Agenda.WebApp.ViewModels.ModuloTarefa;
-using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloTarefa
 {
@@ -21,11 +17,11 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FormsTarefaViewModel), 201)]
+        [ProducesResponseType(typeof(InserirTarefaViewModel), 201)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Post(
-            FormsTarefaViewModel tarefaViewModel
+            InserirTarefaViewModel tarefaViewModel
         )
         {
             var tarefa = mapeador.Map<Tarefa>(tarefaViewModel);
@@ -111,13 +107,13 @@ namespace e_Agenda.WebApp.Controllers.ModuloTarefa
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(FormsTarefaViewModel), 200)]
+        [ProducesResponseType(typeof(EditarTarefaViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Put(
             Guid id,
-            FormsTarefaViewModel tarefaVIewModel
+            EditarTarefaViewModel tarefaVIewModel
         )
         {
             var tarefaDb = await servicoTarefa.SelecionarPorIdAsync(id);

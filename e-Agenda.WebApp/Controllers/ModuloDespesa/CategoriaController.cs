@@ -1,15 +1,13 @@
-﻿using AutoMapper;
-using e_Agenda.Aplicacao.ModuloDespesa;
+﻿using e_Agenda.Aplicacao.ModuloDespesa;
 using e_Agenda.Dominio.ModuloDespesa;
+using e_Agenda.WebApp.Controllers.Shared;
 using e_Agenda.WebApp.ViewModels.ModuloDespesa.Categoria;
-using FluentResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloDespesa
 {
     [Route("api/categorias")]
     [ApiController]
-    public class CategoriaController : ControllerBase
+    public class CategoriaController : ApiControllerBase
     {
         private readonly ServicoCategoria servicoCategoria;
         private readonly IMapper mapeador;
@@ -43,16 +41,16 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
             if (categoriaResult.IsFailed)
                 return NotFound(categoriaResult.Errors);
 
-            var viewModel = mapeador.Map<VisualizarCategoriaViewModel>(categoriaResult);
+            var viewModel = mapeador.Map<VisualizarCategoriaViewModel>(categoriaResult.Value);
 
             return Ok(viewModel);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FormsCategoriaViewModel), 201)]
+        [ProducesResponseType(typeof(InserirCategoriaViewModel), 201)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> Inserir(FormsCategoriaViewModel categoriaViewModel)
+        public async Task<IActionResult> Inserir(InserirCategoriaViewModel categoriaViewModel)
         {
             var categoria = mapeador.Map<Categoria>(categoriaViewModel);
 
@@ -62,11 +60,11 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(FormsCategoriaViewModel), 200)]
+        [ProducesResponseType(typeof(EditarCategoriaViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> Editar(Guid id, FormsCategoriaViewModel categoriaViewModel)
+        public async Task<IActionResult> Editar(Guid id, EditarCategoriaViewModel categoriaViewModel)
         {
             var resultadoSelecao = await servicoCategoria.SelecionarPorIdAsync(id);
 
@@ -95,21 +93,6 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
             var categoriaResult = await servicoCategoria.ExcluirAsync(resultadoSelecao.Value);
 
             return ProcessarResultado(categoriaResult);
-        }
-        private IActionResult ProcessarResultado(Result<Categoria> resultadoCategoria, FormsCategoriaViewModel categoriaViewModel = null)
-        {
-            if (resultadoCategoria.IsFailed)
-                return BadRequest(new
-                {
-                    Sucesso = false,
-                    Erros = resultadoCategoria.Errors.Select(x => x.Message)
-                });
-
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = categoriaViewModel
-            });
         }
     }
 }

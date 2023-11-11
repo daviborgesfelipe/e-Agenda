@@ -1,15 +1,13 @@
-﻿using AutoMapper;
-using e_Agenda.Aplicacao.ModuloDespesa;
+﻿using e_Agenda.Aplicacao.ModuloDespesa;
 using e_Agenda.Dominio.ModuloDespesa;
+using e_Agenda.WebApp.Controllers.Shared;
 using e_Agenda.WebApp.ViewModels.ModuloDespesa.Despesa;
-using FluentResults;
-using Microsoft.AspNetCore.Mvc;
 
 namespace e_Agenda.WebApp.Controllers.ModuloDespesa
 {
     [Route("api/despesas")]
     [ApiController]
-    public class DespesaController : ControllerBase
+    public class DespesaController : ApiControllerBase
     {
         private readonly ServicoDespesa servicoDespesa;
         private readonly IMapper mapeador;
@@ -67,16 +65,16 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
             if (despesaResult.IsFailed)
                 return NotFound(despesaResult.Errors);
 
-            var viewModel = mapeador.Map<VisualizarDespesaViewModel>(despesaResult);
+            var viewModel = mapeador.Map<VisualizarDespesaViewModel>(despesaResult.Value);
 
             return Ok(viewModel);
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FormsDespesaViewModel), 201)]
+        [ProducesResponseType(typeof(InserirDespesaViewModel), 201)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> Inserir(FormsDespesaViewModel despesaViewModel)
+        public async Task<IActionResult> Inserir(InserirDespesaViewModel despesaViewModel)
         {
             var despesa = mapeador.Map<Despesa>(despesaViewModel);
 
@@ -86,11 +84,11 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(FormsDespesaViewModel), 200)]
+        [ProducesResponseType(typeof(EditarDespesaViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> Editar(Guid id, FormsDespesaViewModel despesaViewModel)
+        public async Task<IActionResult> Editar(Guid id, EditarDespesaViewModel despesaViewModel)
         {
             var resultadoSelecao = await servicoDespesa.SelecionarPorIdAsync(id);
 
@@ -119,21 +117,6 @@ namespace e_Agenda.WebApp.Controllers.ModuloDespesa
             var resultadoDelete = await servicoDespesa.ExcluirAsync(resultadoGet.Value);
 
             return ProcessarResultado(resultadoDelete);
-        }
-        private IActionResult ProcessarResultado(Result<Despesa> resultadoDespesa, FormsDespesaViewModel despesaViewModel = null)
-        {
-            if (resultadoDespesa.IsFailed)
-                return BadRequest(new
-                {
-                    Sucesso = false,
-                    Erros = resultadoDespesa.Errors.Select(x => x.Message)
-                });
-
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = despesaViewModel
-            });
         }
     }
 }

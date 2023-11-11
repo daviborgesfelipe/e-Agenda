@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using e_Agenda.Aplicacao.ModuloContato;
 using e_Agenda.Dominio.ModuloContato;
+using e_Agenda.WebApp.Controllers.Shared;
 using e_Agenda.WebApp.ViewModels.ModuloContato;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
@@ -9,111 +10,78 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
 {
     [Route("api/contatos")]
     [ApiController]
-    public class ContatoController : ControllerBase
+    public class ContatoController : ApiControllerBase
     {
         private ServicoContato servicoContato;
         private IMapper mapeador;
-        private readonly ILogger<ContatoController> logger;
 
-        public ContatoController(ServicoContato servicoContato, IMapper mapeador, ILogger<ContatoController> logger)
+        public ContatoController(ServicoContato servicoContato, IMapper mapeador)
         {
             this.servicoContato = servicoContato;
             this.mapeador = mapeador;
-            this.logger = logger;
         }
 
         [HttpPost]
-        [ProducesResponseType(typeof(FormsContatoViewModel), 201)]
+        [ProducesResponseType(typeof(InserirContatoViewModel), 201)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> Post(
-            FormsContatoViewModel contatoViewModel
-        )
+        public async Task<IActionResult> Post( InserirContatoViewModel contatoViewModel )
         {
             var contatoMap = mapeador.Map<Contato>(contatoViewModel);
 
             var resultadoPost = await servicoContato.InserirAsync(contatoMap);
 
-            return ProcessarResultado(resultadoPost, contatoViewModel);
+            return ProcessarResultado(resultadoPost.ToResult(), contatoViewModel);
         }
 
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(FormsContatoViewModel), 200)]
+        [ProducesResponseType(typeof(EditarContatoViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 400)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
         public async Task<IActionResult> Put(
-            Guid id, 
-            FormsContatoViewModel contatoViewModel
+            Guid id,
+            EditarContatoViewModel contatoViewModel
         )
         {
             var resultadoGet = await servicoContato.SelecionarPorIdAsync(id);
 
             if (resultadoGet.IsFailed)
-                return NotFound(new
-                {
-                    Sucesso = false,
-                    Erros = resultadoGet.Errors.Select(x => x.Message)
-                });
+                return NotFound(resultadoGet.Errors);
 
             var contato = mapeador.Map(contatoViewModel, resultadoGet.Value);
 
             var resultadoPut = await servicoContato.Editar(contato);
 
-            return ProcessarResultado(resultadoPut, contatoViewModel);
+            return ProcessarResultado(resultadoPut.ToResult(), contatoViewModel);
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(ListarContatoViewModel), 200)]
+        [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> GetAll(
-            StatusFavoritoEnum statusFavorito
-        )
+        public async Task<IActionResult> GetAll( StatusFavoritoEnum statusFavorito )
         {
-            logger.LogInformation("Selecionado todos os contatos " + statusFavorito);
-
             var resultadoGetAll = await servicoContato.SelecionarTodosAsync(statusFavorito);
 
             if (resultadoGetAll.IsFailed)
-            {
-                return BadRequest(new
-                {
-                    Mensagem = "Erro ao selecionar a lista de contatos",
-                    Erros = resultadoGetAll.Errors.Select(e => e.Message).ToArray(),
-                    resultadoGetAll.IsFailed
-                });
-            }
+                return NotFound(resultadoGetAll.Errors);
 
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = mapeador.Map<List<ListarContatoViewModel>>(resultadoGetAll.Value),
-                QtdRegistros = resultadoGetAll.Value.Count
-            });
+            return Ok(mapeador.Map<List<ListarContatoViewModel>>(resultadoGetAll.Value));
         }
 
         [HttpGet("visualizacao-completa/{id}")]
         [ProducesResponseType(typeof(VisualizarContatoViewModel), 200)]
         [ProducesResponseType(typeof(string[]), 404)]
         [ProducesResponseType(typeof(string[]), 500)]
-        public async Task<IActionResult> GetCompleteById(
-            Guid id
-        )
+        public async Task<IActionResult> GetCompleteById( Guid id )
         {
-            var contatoResult = await servicoContato.SelecionarPorIdAsync(id);
+            var resultadoGet = await servicoContato.SelecionarPorIdAsync(id);
 
-            if (contatoResult.IsFailed)
-                return NotFound(new
-                {
-                    Sucesso = false,
-                    Erros = contatoResult.Errors.Select(x => x.Message)
-                });
+            if (resultadoGet.IsFailed)
+                return NotFound(resultadoGet.Errors);
 
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = mapeador.Map<VisualizarContatoViewModel>(contatoResult)
-            });
+            return Ok(mapeador.Map<VisualizarContatoViewModel>(resultadoGet.Value));
         }
 
         [HttpDelete("{id}")]
@@ -126,31 +94,11 @@ namespace e_Agenda.WebApp.Controllers.ModuloContato
             var resultadoSelecao = await servicoContato.SelecionarPorIdAsync(id);
 
             if (resultadoSelecao.IsFailed)
-                return NotFound(new
-                {
-                    Sucesso = false,
-                    Erros = resultadoSelecao.Errors.Select(x => x.Message)
-                });
+                return NotFound(resultadoSelecao.Errors);
 
             var resultadoDelete = await servicoContato.Excluir(resultadoSelecao.Value);
 
             return ProcessarResultado(resultadoDelete);
-        }
-
-        private IActionResult ProcessarResultado(Result<Contato> contatoResult, FormsContatoViewModel contatoViewModel = null)
-        {
-            if (contatoResult.IsFailed)
-                return BadRequest(new
-                {
-                    Sucesso = false,
-                    Erros = contatoResult.Errors.Select(x => x.Message)
-                });
-
-            return Ok(new
-            {
-                Sucesso = true,
-                Dados = contatoViewModel
-            });
         }
     }
 }
